@@ -1,0 +1,11 @@
+Pix_Pro_Baseball/
+Pix_Pro_Baseball/*
+Pix_Pro_Baseball.zip
+.DS_Store
+.DS_Store/*
+pix_pro_stats/venv/
+pix_pro_stats/venv/*
+pix_pro_stats/src/__pycache__/
+pix_pro_stats/src/__pycache__/*
+pix_pro_stats/src/app_data/*
+pix_pro_stats/src/app_data/
