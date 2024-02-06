@@ -2,11 +2,11 @@
 
 class Team:
 
-    def __init__(self, id, name, team_record, is_user_team):
+    def __init__(self, id, name):
         self.id = id
         self.name = name
-        self.is_user_team = is_user_team
-        self.team_record = team_record
+        self.is_user_team = False
+        self.team_record = None
         self.players = []
 
 

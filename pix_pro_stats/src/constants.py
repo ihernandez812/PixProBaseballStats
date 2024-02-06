@@ -3,6 +3,7 @@ TEAM_SEASON='season'
 TEAM_GAMES_PLAYED='gamesPlayed'
 TEAM_GAMES_WON='gamesWon'
 TEAM_IS_USER_TEAM='isUserTeam'
+TEAM_PLAYERS='players'
 
 PLAYER_NAME='name'
 PLAYER_ID='id'
@@ -13,6 +14,8 @@ PLAYER_SEASON_PITCHING='seasionPitching'
 PLAYER_TEAM_PITCHING='teamCareerPitching'
 PLAYER_POSITION='fieldingPosition'
 PLAYER_DESIGNATED_HITTER='designatedHitter'
+PLAYER_PITCHING='pitching'
+PLAYER_PITCHING_TYPE='pitchingType'
 
 LEFT_HANDED=-1
 RIGHT_HANDED=1
@@ -61,3 +64,16 @@ JSON_FILE_EXT='.json'
 READ_FILE_BYTES='rb'
 WRITE_FILE='w'
 PLAIN_TXT_FILES_PATH='./app_data'
+
+TEAM_NAMES_FILE='/UserTeamNames.json'
+TEAM_FILE='Team_{number}.json'
+REGULAR_SEASON_DATA_FILE='RegularSeasonData.json'
+POST_SEASON_DATA_FILE='PostSeasonData.json'
+
+CSV_WAR='WAR'
+CSV_WIN='W'
+CSV_LOSS='L'
+CSV_SAVES='SV'
+CSV_ERA='ERA'
+CSV_IP='IP'
+CSV_STRIKE_OUTS='SO'

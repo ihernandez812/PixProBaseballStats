@@ -1,9 +1,22 @@
 import PitchingStats
 import GeneralStats
 import BattingStats
+import pandas as pd
 
 class StatsUtils:
 
+    @staticmethod
+    def calculate_average_cy_young_stats(cy_young_csv: str) -> dict:
+        cy_young_all_time_stats = pd.read_csv(cy_young_csv)
+
+
+    
+
+    @staticmethod
+    def calculate_average_mvp_stats(mvp_csv: str) -> dict:
+        mvp_csv_all_time_stats = pd.read_csv(mvp_csv)
+
+        
     @staticmethod
     def calculate_average(general_stats: GeneralStatsStats) -> float:
         hits = general_stats.get_hits()
