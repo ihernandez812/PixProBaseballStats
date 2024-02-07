@@ -1,5 +1,5 @@
-import PitchingStats
-import BattingStats
+from pitching_stats import PitchingStats
+from batting_stats import BattingStats
 
 class Player:
 

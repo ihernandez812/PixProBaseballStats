@@ -1,10 +1,10 @@
-import GeneralStats
+from general_stats import GeneralStats
 
 
 class PitchingStats(GeneralStats):
 
     def __init__(self, strike_outs, at_bats, innings_outs, pitches, walks, home_runs, num_games, strikes, earned_runs, hits, balls, runs):
-        GeneralStats.__init__(self, strike_outs, at_bats, walks, home_runs, strikes, hits, balls, runs)
+        GeneralStats.__init__(self, strike_outs, at_bats, walks, home_runs, num_games,strikes, hits, balls, runs)
         self.innings_outs = innings_outs
         self.pitches = pitches
         self.earned_runs = earned_runs

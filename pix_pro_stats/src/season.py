@@ -7,11 +7,18 @@ class Season:
     def __init__(self, year):
         self.year = year
         self.playoffs = None
+        self.regular_season = []
         self.teams = []
 
     def get_year(self):
         return self.year 
     
+    def add_regular_season_game(self, regular_season_game):
+        self.regular_season.append(game)
+    
+    def get_regular_season(self):
+        return regular_season
+
     def set_playoffs(self, playoffs : Playoffs):
         self.playoffs = playoffs
 

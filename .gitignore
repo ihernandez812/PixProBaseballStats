@@ -9,3 +9,6 @@ pix_pro_stats/src/__pycache__/
 pix_pro_stats/src/__pycache__/*
 pix_pro_stats/src/app_data/*
 pix_pro_stats/src/app_data/
+
+pix_pro_stats/src/current_mlb_stats/
+pix_pro_stats/src/current_mlb_stats/*

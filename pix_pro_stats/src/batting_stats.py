@@ -1,11 +1,11 @@
-import GeneralStats
+from general_stats import GeneralStats
 
 class BattingStats(GeneralStats):
 
     def __init__(self,strike_outs, at_bats, singles, doubles, triples, home_runs, 
-                contact, sacrifice_flys, stolen_bases, walkes, plate_apperances,
+                contact, sacrifice_flys, stolen_bases, walks, plate_apperances,
                 num_games, hits, rbis, strikes, balls, hit_by_pitch, runs) -> None:
-        GeneralStats.__init__(self, strike_outs, at_bats, walks, home_runs, strikes, hits, balls, runs)
+        GeneralStats.__init__(self, strike_outs, at_bats, walks, home_runs, num_games, strikes, hits, balls, runs)
         self.singles = singles
         self.doubles = doubles
         self.triples = triples
