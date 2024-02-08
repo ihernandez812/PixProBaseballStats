@@ -13,6 +13,12 @@ class Game:
     def get_team_two(self):
         return self.team_two
 
+    def get_team_one_score(self):
+        return self.team_one_score
+
+    def get_team_two_score(self):
+        return self.team_two_score
+
     def get_winner(self):
         if self.team_one_score > self.team_two_score:
             return self.team_one

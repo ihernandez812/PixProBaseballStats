@@ -8,11 +8,93 @@ from player import Player
 from record import Record
 from pitching_stats import PitchingStats
 from batting_stats import BattingStats
+from game import Game
+from series import Series
+from season import Season
+from playoffs import Playoffs
 
 import json
 from date_time_encoder import DateTimeEncoder
 
 teams = {}
+
+def create_game(game_obj, is_playoff_game=False):
+    game = None
+    league_type = game_obj.get(LEAGUE_TYPE,-1)
+    if league_type == MAJOR_LEAGUE or is_playoff_game:
+        team_one_id = game_obj.get(TEAM_ONE_ID)
+        team_one = teams.get(team_one_id)
+        team_two_id = game_obj.get(TEAM_TWO_ID)
+        team_two = teams.get(team_two_id)
+        team_one_score = game_obj.get(TEAM_ONE_SCORE, 0)
+        team_two_score = game_obj.get(TEAM_TWO_SCORE, 0)
+        game = Game(team_one, team_one_score, team_two, team_two_score)
+    return game
+
+def create_series(post_season_obj, key, series_type=None):
+    if series_type:
+        key.format(series=series_type)
+
+    series_obj = post_season_obj.get(key, {})
+    series_length = series_obj.get(SERIES_LENGTH)
+    winner_id = series_obj.get(WINNER_ID)
+    team_one_id = series_obj.get(PLAYOFFS_TEAM_ONE_ID)
+    team_two_id = series_obj.get(PLAYOFFS_TEAM_TWO_ID)
+    team_one = teams.get(str(team_one_id))
+    team_two = teams.get(str(team_two_id))
+    games = series_obj.get(FIXTURES, [])
+    series_games = []
+    for game in games:
+        new_game = create_game(game, True)
+        series_games.append(game)
+    
+    series = Series(team_one, team_two, winner_id, series_games, series_length)
+    return series
+
+def check_is_mlb_post_season(post_season_obj):
+    world_series = post_season_obj.get(WORLD_SERIES, {})
+    team_one_id = world_series.get(PLAYOFFS_TEAM_ONE_ID, -1)
+    return str(team_one_id) in list(teams.keys())
+
+def create_playoffs(post_season_obj):
+    is_major_leauge = check_is_mlb_post_season(post_season_obj)
+    playoffs = None
+    if is_major_leauge:
+        al_wildcard = create_series(post_season_obj, AL_WILDCARD)
+        nl_wildcard = create_series(post_season_obj, NL_WILDCARD)
+        al_divisional_one = create_series(post_season_obj, AL_DIVISIONAL, 0)
+        al_divisional_two = create_series(post_season_obj, AL_DIVISIONAL, 1)
+        nl_divisonal_one = create_series(post_season_obj, NL_DIVISONAL, 0)
+        nl_divisonal_two = create_series(post_season_obj, NL_DIVISONAL, 1)
+        al_championship = create_series(post_season_obj, AL_CHAMPIONSHIP)
+        nl_championship = create_series(post_season_obj, NL_CHAMPIONSHIP)
+        world_series = create_series(post_season_obj, WORLD_SERIES)
+        playoffs = Playoffs(al_wildcard, nl_wildcard, al_divisional_one, al_divisional_two, nl_divisonal_one, nl_divisonal_two,
+                            al_championship, nl_championship, world_series)
+    return playoffs
+
+
+def create_post_season():
+    post_season_path = PLAIN_TXT_FILES_PATH + POST_SEASON_DATA_FILE
+    post_season_data = FileUtils.read_json_file(post_season_path)
+    post_season_leagues = post_season_data.get(POST_SEASON_LEAGUES, [])
+    post_season = None
+    for post_season_league in post_season_leagues:
+        post_season = create_playoffs(post_season_league)
+        if post_season:
+            break
+    return post_season
+
+def create_regular_season():
+    regular_season_path = PLAIN_TXT_FILES_PATH + REGULAR_SEASON_DATA_FILE
+    regular_season_data = FileUtils.read_json_file(regular_season_path)
+    regular_season_games = regular_season_data.get(FIXTURES, [])
+    games = []
+    for regular_season_game in regular_season_games:
+        new_game = create_game(regular_season_game)
+        if new_game:
+            games.append(new_game)
+    return games
 
 def create_record(season_obj, team):
     games_won = season_obj.get(GAMES_WON, -1)
@@ -123,6 +205,13 @@ def create_season():
     fill_teams()
     regular_season_games = create_regular_season()
     post_season = create_post_season()
+    team_list = teams.values()
+    season = Season(YEAR, team_list, regular_season_games, post_season)
+    playoffs = season.get_playoffs()
+    world_series = playoffs.get_world_series()
+    winner = world_series.get_series_winner()
+    name = winner.get_name()
+    print(name)
 
 if __name__ == '__main__':
     create_season()

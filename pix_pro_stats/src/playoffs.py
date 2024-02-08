@@ -1,11 +1,14 @@
 from series import Series
 
 class Playoffs:
-    def __init__(self, al_wildcard, nl_wildcard, al_divisional, nl_divisional, al_championship, nl_championship, world_series):
+    def __init__(self, al_wildcard, nl_wildcard, al_divisional_one, nl_divisional_one, al_divisional_two, nl_divisional_two,
+                al_championship, nl_championship, world_series):
         self.al_wildcard = al_wildcard
         self.nl_wildcard = nl_wildcard
-        self.al_divisional = al_divisional
-        self.nl_divisional = nl_divisional
+        self.al_divisional_one = al_divisional_one
+        self.nl_divisional_one = nl_divisional_one
+        self.al_divisional_two = al_divisional_two
+        self.nl_divisional_two = nl_divisional_two
         self.al_championship = al_championship
         self.nl_championship = nl_championship
         self.world_series = world_series

@@ -23,6 +23,27 @@ LEFT_HANDED=-1
 RIGHT_HANDED=1
 
 YEAR=2023
+MAJOR_LEAGUE=0
+LEAGUE_TYPE='l'
+TEAM_ONE_ID='t0id'
+TEAM_ONE_SCORE='t0score'
+TEAM_TWO_ID='t1id'
+TEAM_TWO_SCORE='t2score'
+POST_SEASON_LEAGUES='postSeasonLeagues'
+FIXTURES='fixtures'
+WINNER_ID='winner'
+WORLD_SERIES='final'
+AL_CHAMPIONSHIP='confOneFinal'
+NL_CHAMPIONSHIP='confTwoFinal'
+AL_DIVISIONAL='confOneSemi{series}'
+NL_DIVISONAL='confTwoSemi{series}'
+AL_WILDCARD='confOneWildCard'
+NL_WILDCARD='confTwoWildCard'
+SERIES_LENGTH='seriesLength'
+PLAYOFFS_TEAM_ONE_ID='team0id'
+PLAYOFFS_TEAM_TWO_ID='team1id'
+
+
 STRIKE_OUTS='strikeOuts'
 AT_BATS='atBats'
 SINGLES='base1'

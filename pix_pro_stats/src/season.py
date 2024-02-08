@@ -4,11 +4,11 @@ from playoffs import Playoffs
 
 class Season:
     
-    def __init__(self, year):
+    def __init__(self, year, teams, regular_season, playoffs):
         self.year = year
-        self.playoffs = None
-        self.regular_season = []
-        self.teams = []
+        self.playoffs = playoffs
+        self.regular_season = regular_season
+        self.teams = teams
 
     def get_year(self):
         return self.year 
