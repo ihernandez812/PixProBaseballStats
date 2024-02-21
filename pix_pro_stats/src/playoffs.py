@@ -25,17 +25,29 @@ class Playoffs:
     def set_nl_wildcard(self, value):
         self.nl_wildcard = value
 
-    def get_al_divisional(self):
-        return self.al_divisional
+    def get_al_divisional_one(self):
+        return self.al_divisional_one
 
-    def set_al_divisional(self, value):
-        self.al_divisional = value
+    def set_al_divisional_one(self, value):
+        self.al_divisional_one = value
 
-    def get_nl_divisional(self):
-        return self.nl_divisional
+    def get_al_divisional_two(self):
+        return self.al_divisional_two
 
-    def set_nl_divisional(self, value):
-        self.nl_divisional = value
+    def set_al_divisional_two(self, value):
+        self.al_divisional_two = value
+
+    def get_nl_divisional_one(self):
+        return self.nl_divisional_one
+
+    def set_nl_divisional_one(self, value):
+        self.nl_divisional_one = value
+
+    def get_nl_divisional_two(self):
+        return self.nl_divisional_two
+
+    def set_nl_divisional_two(self, value):
+        self.nl_divisional_two = value
 
     def get_al_championship(self):
         return self.al_championship

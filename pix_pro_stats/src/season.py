@@ -14,10 +14,10 @@ class Season:
         return self.year 
     
     def add_regular_season_game(self, regular_season_game):
-        self.regular_season.append(game)
+        self.regular_season.append(regular_season_game)
     
     def get_regular_season(self):
-        return regular_season
+        return self.regular_season
 
     def set_playoffs(self, playoffs : Playoffs):
         self.playoffs = playoffs

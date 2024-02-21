@@ -44,13 +44,13 @@ class FileUtils:
 
     @staticmethod
     def convert_files_to_plist():
-        files = [join(PLAIN_TXT_FILES_PATH, file) for file in  listdir(PLAIN_TXT_FILES_PATH) if isfile(join(PLAIN_TXT_FILES_PATH, file))]
+        files = [os.path.join(PLAIN_TXT_FILES_PATH, file) for file in  os.listdir(PLAIN_TXT_FILES_PATH) if os.path.isfile(os.path.join(PLAIN_TXT_FILES_PATH, file))]
         for file in files:
             FileUtils.change_file_type(file, PLIST_FILE_EXT)
     
     @staticmethod
     def convert_files_to_json():
-        files = [join(PLAIN_TXT_FILES_PATH, file) for file in  listdir(PLAIN_TXT_FILES_PATH) if isfile(join(PLAIN_TXT_FILES_PATH, file))]
+        files = [os.path.join(PLAIN_TXT_FILES_PATH, file) for file in  os.listdir(PLAIN_TXT_FILES_PATH) if os.path.isfile(os.path.join(PLAIN_TXT_FILES_PATH, file))]
         for file in files:
             print(file)
             if 'DS_Store' not in file:
@@ -58,7 +58,7 @@ class FileUtils:
                 json_path = FileUtils.change_file_ext(file, JSON_FILE_EXT)
                 json_file = json.dumps(FileUtils.bplist_dict(file_obj), cls=DateTimeEncoder, indent=4)
                 print(json_path, file)
-                remove(file)
+                os.remove(file)
                 with open(json_path, WRITE_FILE) as f:
                     f.write(json_file)
   #  //json_file = json.dumps(bplist_dict(open('../../UserTeamNames.plist', 'rb')), cls=DateTimeEncoder, indent=4)

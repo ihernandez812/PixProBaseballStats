@@ -6,7 +6,7 @@ class Team:
         self.id = id
         self.name = name
         self.is_user_team = False
-        self.team_record = None
+        self.record = None
         self.players = []
 
 
@@ -29,11 +29,11 @@ class Team:
     def set_is_user_team(self, value):
         self.is_user_team = value
 
-    def get_team_record(self):
-        return self.team_record
+    def get_record(self):
+        return self.record
 
-    def set_team_record(self, value):
-        self.team_record = value
+    def set_record(self, value):
+        self.record = value
 
     def get_players(self):
         return self.players

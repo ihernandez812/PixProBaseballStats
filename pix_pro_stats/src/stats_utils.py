@@ -1,6 +1,6 @@
-import PitchingStats
-import GeneralStats
-import BattingStats
+from pitching_stats import PitchingStats
+from general_stats import GeneralStats
+from batting_stats import BattingStats
 import pandas as pd
 
 class StatsUtils:
@@ -18,7 +18,7 @@ class StatsUtils:
 
         
     @staticmethod
-    def calculate_average(general_stats: GeneralStatsStats) -> float:
+    def calculate_average(general_stats: GeneralStats) -> float:
         hits = general_stats.get_hits()
         at_bats = general_stats.get_at_bats()
         avg = hits / at_bats
@@ -33,7 +33,7 @@ class StatsUtils:
         innings_pitched = innings_outs / 3
         #should technically be 3 since each game is 3 innings but they use 9 I dunno why
         #could have a true era stat lates 
-        era = (earnedRuns/innings_pitched) * 9
+        era = (earned_runs/innings_pitched) * 9
 
         return round(era, 3)
 
@@ -77,8 +77,8 @@ class StatsUtils:
 
     @staticmethod
     def calculate_ops(batting_stats: BattingStats) -> float:
-        obp = calculate_obp()
-        slg = calculate_slug()
+        obp = StatsUtils.calculate_obp(batting_stats)
+        slg = StatsUtils.calculate_slug(batting_stats)
 
         ops = obp + slg
 

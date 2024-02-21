@@ -12,16 +12,15 @@ from game import Game
 from series import Series
 from season import Season
 from playoffs import Playoffs
-
-import json
-from date_time_encoder import DateTimeEncoder
+from mongodb_utils import Database
+from pymongo_utils import PymongoUtils
 
 teams = {}
 
-def create_game(game_obj, is_playoff_game=False):
+def create_game(game_obj):
     game = None
     league_type = game_obj.get(LEAGUE_TYPE,-1)
-    if league_type == MAJOR_LEAGUE or is_playoff_game:
+    if league_type == MAJOR_LEAGUE:
         team_one_id = game_obj.get(TEAM_ONE_ID)
         team_one = teams.get(team_one_id)
         team_two_id = game_obj.get(TEAM_TWO_ID)
@@ -31,22 +30,33 @@ def create_game(game_obj, is_playoff_game=False):
         game = Game(team_one, team_one_score, team_two, team_two_score)
     return game
 
-def create_series(post_season_obj, key, series_type=None):
-    if series_type:
-        key.format(series=series_type)
+#Post season json file has diffrent keys so we need a diffrent method
+def create_post_season_game(post_season_game_obj):
+    game = None
+    team_one_id = post_season_game_obj.get(PLAYOFFS_TEAM_ONE_ID)
+    team_one = teams.get(team_one_id)
+    team_two_id = post_season_game_obj.get(PLAYOFFS_TEAM_TWO_ID)
+    team_two = teams.get(team_two_id)
+    team_one_score = post_season_game_obj.get(PLAYOFFS_TEAM_ONE_SCORE, 0)
+    team_two_score = post_season_game_obj.get(PLAYOFFS_TEAM_TWO_SCORE, 0)
+    game = Game(team_one, team_one_score, team_two, team_two_score)
+    return game
 
+def create_series(post_season_obj, key, series_type=None):
+    if series_type is not None:
+        key = key.format(series=series_type)
     series_obj = post_season_obj.get(key, {})
     series_length = series_obj.get(SERIES_LENGTH)
     winner_id = series_obj.get(WINNER_ID)
     team_one_id = series_obj.get(PLAYOFFS_TEAM_ONE_ID)
     team_two_id = series_obj.get(PLAYOFFS_TEAM_TWO_ID)
-    team_one = teams.get(str(team_one_id))
-    team_two = teams.get(str(team_two_id))
+    team_one = teams.get(team_one_id)
+    team_two = teams.get(team_two_id)
     games = series_obj.get(FIXTURES, [])
     series_games = []
     for game in games:
-        new_game = create_game(game, True)
-        series_games.append(game)
+        new_game = create_post_season_game(game)
+        series_games.append(new_game)
     
     series = Series(team_one, team_two, winner_id, series_games, series_length)
     return series
@@ -54,7 +64,7 @@ def create_series(post_season_obj, key, series_type=None):
 def check_is_mlb_post_season(post_season_obj):
     world_series = post_season_obj.get(WORLD_SERIES, {})
     team_one_id = world_series.get(PLAYOFFS_TEAM_ONE_ID, -1)
-    return str(team_one_id) in list(teams.keys())
+    return team_one_id in list(teams.keys())
 
 def create_playoffs(post_season_obj):
     is_major_leauge = check_is_mlb_post_season(post_season_obj)
@@ -100,7 +110,7 @@ def create_record(season_obj, team):
     games_won = season_obj.get(GAMES_WON, -1)
     games_played = season_obj.get(GAMES_PLAYED, -1)
     team_record = Record(games_won, games_played)
-    team.set_team_record(team_record)
+    team.set_record(team_record)
 
 def create_pitching_stats(pitching_obj):
     strike_outs = pitching_obj.get(STRIKE_OUTS, -1)
@@ -169,7 +179,7 @@ def create_player(player_obj):
 
     is_hof = False
 
-    player = Player(player_id, name, handedness, position, pitcher_type, designated_hitter, season_pitching, season_batting, team_pitching, team_batting, is_hof)
+    player = Player(player_id, name, handedness, position, pitcher_type, designated_hitter, season_batting, team_batting, season_pitching, team_pitching, is_hof)
     return player
 
 def create_players(players_list, team):
@@ -192,7 +202,8 @@ def create_teams():
     team_names_path = PLAIN_TXT_FILES_PATH + TEAM_NAMES_FILE 
     team_names_map = FileUtils.read_json_file(team_names_path)
     team_id_name_map = team_names_map.get(TEAM_NAMES, {})
-    for team_id, team_name in team_id_name_map.items():
+    for team_id_str, team_name in team_id_name_map.items():
+        team_id = int(team_id_str)
         new_team = Team(team_id, team_name)
         teams[team_id] = new_team
 
@@ -207,12 +218,20 @@ def create_season():
     post_season = create_post_season()
     team_list = teams.values()
     season = Season(YEAR, team_list, regular_season_games, post_season)
-    playoffs = season.get_playoffs()
-    world_series = playoffs.get_world_series()
-    winner = world_series.get_series_winner()
-    name = winner.get_name()
-    print(name)
+    return season
 
 if __name__ == '__main__':
-    create_season()
+    season = create_season()
+    g = season.get_playoffs().get_nl_wildcard().get_games()
+    t = season.get_playoffs().get_nl_wildcard().get_team_one()
+    database = Database(uri=PYMONGO_URI)
+    database.create_connection()
+    database.ping_connection()
+    database.set_database(PYMONGO_DATABASE_NAME)
+    season_id = PymongoUtils.insert_season(season, database)
+    season_teams = season.get_teams()
+    PymongoUtils.insert_teams_records(season_teams, season_id, database)
+    PymongoUtils.insert_teams_players_season(season_teams, season_id, database)
+    PymongoUtils.insert_teams_players(season_teams, database)
+    PymongoUtils.upsert_teams_players_stats(season_teams, season_id, database)
     
