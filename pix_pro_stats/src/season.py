@@ -4,11 +4,12 @@ from playoffs import Playoffs
 
 class Season:
     
-    def __init__(self, year, teams, regular_season, playoffs):
+    def __init__(self, year, teams, regular_season, playoffs, awards):
         self.year = year
         self.playoffs = playoffs
         self.regular_season = regular_season
         self.teams = teams
+        self.awards = awards
 
     def get_year(self):
         return self.year 
@@ -30,3 +31,9 @@ class Season:
 
     def get_teams(self):
         return self.teams
+    
+    def set_awards(self, awards):
+        self.awards = awards
+
+    def get_awards(self):
+        return self.awards

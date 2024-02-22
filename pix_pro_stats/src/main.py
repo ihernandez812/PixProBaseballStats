@@ -3,6 +3,7 @@ from os.path import isfile, join
 from pathlib import Path
 from constants import *    
 from file_utils import FileUtils
+from stats_utils import StatsUtils
 from team import Team
 from player import Player
 from record import Record
@@ -12,6 +13,7 @@ from game import Game
 from series import Series
 from season import Season
 from playoffs import Playoffs
+from awards import Awards
 from mongodb_utils import Database
 from pymongo_utils import PymongoUtils
 
@@ -207,6 +209,23 @@ def create_teams():
         new_team = Team(team_id, team_name)
         teams[team_id] = new_team
 
+def create_awards(teams: list[Team]):
+    user_team = None
+    cy_young_winner = None
+    mvp_winner = None
+    avg_cy_young_winner = StatsUtils.calculate_average_cy_young_stats(CY_YOUNG_STATS)
+    avg_mvp_winner = StatsUtils.calculate_average_mvp_stats(MVP_STATS)
+    for team in teams:
+        if team.get_is_user_team():
+            user_team = team
+    for player in user_team.get_players():
+        if StatsUtils.is_cy_young_canidate(player, avg_cy_young_winner):
+            cy_young_winner = StatsUtils.get_cy_young_winner(player, cy_young_winner, avg_cy_young_winner)
+        if StatsUtils.is_mvp_canidate(player, avg_mvp_winner):
+            mvp_winner = StatsUtils.get_mvp(player, mvp_winner, avg_mvp_winner)
+    awards = Awards(cy_young_winner, mvp_winner)
+    return awards
+
 def convert_files():
     FileUtils.convert_files_to_plist()
     FileUtils.convert_files_to_json()
@@ -216,22 +235,26 @@ def create_season():
     fill_teams()
     regular_season_games = create_regular_season()
     post_season = create_post_season()
+    awards = create_awards(teams.values())
+
     team_list = teams.values()
-    season = Season(YEAR, team_list, regular_season_games, post_season)
+    season = Season(YEAR, team_list, regular_season_games, post_season, awards)
     return season
 
 if __name__ == '__main__':
     season = create_season()
-    g = season.get_playoffs().get_nl_wildcard().get_games()
-    t = season.get_playoffs().get_nl_wildcard().get_team_one()
-    database = Database(uri=PYMONGO_URI)
-    database.create_connection()
-    database.ping_connection()
-    database.set_database(PYMONGO_DATABASE_NAME)
-    season_id = PymongoUtils.insert_season(season, database)
-    season_teams = season.get_teams()
-    PymongoUtils.insert_teams_records(season_teams, season_id, database)
-    PymongoUtils.insert_teams_players_season(season_teams, season_id, database)
-    PymongoUtils.insert_teams_players(season_teams, database)
-    PymongoUtils.upsert_teams_players_stats(season_teams, season_id, database)
+    awards = season.get_awards()
+    cy_young = awards.get_cy_young().get_name()
+    mvp = awards.get_mvp().get_name()
+    print(cy_young, mvp)
+    # database = Database(uri=PYMONGO_URI)
+    # database.create_connection()
+    # database.ping_connection()
+    # database.set_database(PYMONGO_DATABASE_NAME)
+    # season_id = PymongoUtils.insert_season(season, database)
+    # season_teams = season.get_teams()
+    # PymongoUtils.insert_teams_records(season_teams, season_id, database)
+    # PymongoUtils.insert_teams_players_season(season_teams, season_id, database)
+    # PymongoUtils.insert_teams_players(season_teams, database)
+    # PymongoUtils.upsert_teams_players_stats(season_teams, season_id, database)
     
