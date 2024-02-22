@@ -31,7 +31,7 @@ class StatsUtils:
 
     @staticmethod
     def calculate_average_mvp_stats(mvp_csv: str) -> dict:
-        mvp_all_time_stats = pd.read_csv(mvp_csv)
+        mvp_all_time_stats = pd.read_csv(mvp_csv, keep_default_na=False)
         mvp_all_time_stats.fillna(EMPTY_STRING)
         row_count = 0 
         batting_avg = 0
@@ -78,7 +78,8 @@ class StatsUtils:
         player_two_strike_outs_per_inning = StatsUtils.calculate_strikes_outs_per_inning(player_two_pitching)
         player_one_whip = StatsUtils.calculate_whip(player_one_pitching)
         player_two_whip = StatsUtils.calculate_whip(player_two_pitching)
-
+        
+        
         if player_one_era != player_two_era:
             if player_one_era < player_two_era:
                 player_one_points+=1
@@ -107,16 +108,9 @@ class StatsUtils:
         if curr_winner is None:
             curr_winner = player
         else:
-            player_pitching = player.get_season_pitching()
-            curr_winner_pitching = player.get_season_pitching()
-            player_points = StatsUtils.calculate_cy_young_points(player_pitching, stats)
-            curr_winner_points = StatsUtils.calculate_cy_young_points(curr_winner_pitching, stats)
-            if player_points > curr_winner_points:
-                curr_winner = player
-            elif player_points == curr_winner_points:
-                curr_winner = StatsUtils.calculate_cy_young_tie_breaker(player, curr_winner)
-                if not curr_winner:
-                    raise ValueError('Could not calculate a cy young winner possible tie')
+            curr_winner = StatsUtils.calculate_cy_young_tie_breaker(player, curr_winner)
+            if not curr_winner:
+                raise ValueError('Could not calculate a cy young winner possible tie')
         return curr_winner
     
     @staticmethod
@@ -124,11 +118,13 @@ class StatsUtils:
         points = 0
         era = StatsUtils.calculate_era(player_pitching)
         strikes_per_inning = StatsUtils.calculate_strikes_outs_per_inning(player_pitching)
-
+        num_games = player_pitching.get_num_games()
         if era <= stats[CSV_ERA]:
             points += 1
         if strikes_per_inning >= stats[CSV_STRIKE_OUTS]:
             points += 1
+        if num_games >= MIN_GAMES:
+            points+=.5
         return points
 
     @staticmethod
@@ -137,7 +133,6 @@ class StatsUtils:
         if player.get_position() == PITCHER:
             player_pitching = player.get_season_pitching()
             points = StatsUtils.calculate_cy_young_points(player_pitching, stats)
-            print(points, player.get_name())
             if points >= CY_YOUNG_MIN:
                 is_canidate = True
         return is_canidate
@@ -161,43 +156,56 @@ class StatsUtils:
         player_two_rbis = player_two_batting.get_rbis()
         player_one_stolen_bases = player_one_batting.get_stolen_bases()
         player_two_stolen_bases = player_two_batting.get_stolen_bases()
-        
+        #since players vaule ops we are adding ops
+        player_one_ops = StatsUtils.calculate_ops(player_one_batting)
+        player_two_ops = StatsUtils.calculate_ops(player_two_batting)
+
+        if player_one_ops != player_two_ops:
+            if player_one_ops > player_two_ops:
+                player_one_points+=10
+            else:
+                player_two_points+=10
+
         if player_one_avg != player_two_avg:
             if player_one_avg > player_two_avg:
-                player_one_points+=1
+                player_one_points+=3
             else:
-                player_two_points+=1
+                player_two_points+=3
+
         if player_one_obp != player_two_obp:
             if player_one_obp > player_two_obp:
-                player_one_points+=1
+                player_one_points+=6
             else:
-                player_two_points+=1
+                player_two_points+=6
+
         if player_one_slug != player_two_slug:
             if player_one_slug > player_two_slug:
-                player_one_points+=1
+                player_one_points+=4
             else: 
-                player_two_points+=1
+                player_two_points+=4
+
         if player_one_home_runs != player_two_home_runs:
             if player_one_home_runs > player_two_home_runs:
-                player_one_points+=1
+                player_one_points+=2
             else:
-                player_two_points+=1
+                player_two_points+=2
+
         if player_one_rbis != player_two_rbis:
             if player_one_rbis > player_two_rbis:
-                player_one_points+=1
+                player_one_points+=5
             else:
-                player_two_points+=1
+                player_two_points+=5
         if player_one_stolen_bases != player_two_stolen_bases:
             if player_one_stolen_bases > player_two_stolen_bases:
                 player_one_points+=1
             else:
                 player_two_points+=1
+        
         winner = None
         if player_one_points > player_two_points:
             winner = player_one
         elif player_two_points > player_one_points:
             winner = player_two
-
         return winner
     
     @staticmethod
@@ -205,16 +213,9 @@ class StatsUtils:
         if curr_winner is None:
             curr_winner = player
         else:
-            player_batting = player.get_season_batting()
-            curr_winner_batting = player.get_season_batting()
-            player_points = StatsUtils.calculate_mvp_points(player_batting, stats)
-            curr_winner_points = StatsUtils.calculate_mvp_points(curr_winner_batting, stats)
-            if player_points > curr_winner_points:
-                curr_winner = player
-            elif player_points == curr_winner_points:
-                curr_winner = StatsUtils.calculate_mvp_tie_breaker(player, curr_winner)
-                if not curr_winner:
-                    raise ValueError('Could not calculate a mvp winner possible tie')
+            curr_winner = StatsUtils.calculate_mvp_tie_breaker(player, curr_winner)
+            if not curr_winner:
+                raise ValueError('Could not calculate a mvp winner possible tie')
         return curr_winner
     
     @staticmethod
@@ -226,9 +227,9 @@ class StatsUtils:
         home_runs = player_batting.get_home_runs()
         rbis = player_batting.get_rbis()
         stolen_bases = player_batting.get_stolen_bases()
-
+        num_games = player_batting.get_num_games()
         if batting_average >= stats[CSV_BATTING_AVERAGE]:
-            point+=1
+            points+=1
         if obp >= stats[CSV_OBP]:
             points+=1
         if slug >= stats[CSV_SLUG]:
@@ -239,6 +240,9 @@ class StatsUtils:
             points+=1
         if stolen_bases >= stats[CSV_STOLEN_BASES]:
             points+=1
+        if num_games >= MIN_GAMES:
+            points+=.5
+        
         return points
 
     @staticmethod

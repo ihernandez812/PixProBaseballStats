@@ -222,7 +222,7 @@ def create_awards(teams: list[Team]):
         if StatsUtils.is_cy_young_canidate(player, avg_cy_young_winner):
             cy_young_winner = StatsUtils.get_cy_young_winner(player, cy_young_winner, avg_cy_young_winner)
         if StatsUtils.is_mvp_canidate(player, avg_mvp_winner):
-            mvp_winner = StatsUtils.get_mvp(player, mvp_winner, avg_mvp_winner)
+            mvp_winner = StatsUtils.get_mvp_winner(player, mvp_winner, avg_mvp_winner)
     awards = Awards(cy_young_winner, mvp_winner)
     return awards
 
@@ -257,4 +257,5 @@ if __name__ == '__main__':
     # PymongoUtils.insert_teams_players_season(season_teams, season_id, database)
     # PymongoUtils.insert_teams_players(season_teams, database)
     # PymongoUtils.upsert_teams_players_stats(season_teams, season_id, database)
+    #database.close_connection()
     

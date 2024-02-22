@@ -33,5 +33,7 @@ class Database:
             raise ValueError('Database is not set')
         return self.database[collection_name]
 
+    def close_connection(self):
+        self.connection.close()
     def convert_to_object_id(self, document_id):
         return ObjectId(document_id)
