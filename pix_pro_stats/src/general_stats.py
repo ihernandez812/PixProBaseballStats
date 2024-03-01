@@ -1,8 +1,8 @@
-
+from constants import *
 
 class GeneralStats:
 
-    def __init__(self, strike_outs, at_bats, walks, home_runs, num_games, strikes, hits, balls, runs):
+    def __init__(self, strike_outs, at_bats, walks, home_runs, num_games, strikes, hits, balls, runs, team_id):
         self.strike_outs = strike_outs
         self.at_bats = at_bats
         self.walks = walks
@@ -12,6 +12,7 @@ class GeneralStats:
         self.hits = hits
         self.balls = balls
         self.runs = runs
+        self.team_id = team_id
 
     def get_strike_outs(self):
         return self.strike_outs
@@ -67,3 +68,23 @@ class GeneralStats:
 
     def set_runs(self, value):
         self.runs = value
+    
+    def get_team_id(self):
+        return self.team_id
+
+    def set_team_id(self, value):
+        self.team_id = value
+    
+    def to_model(self):
+        return {
+            PYMONGO_STATS_STRIKE_OUTS: self.strike_outs,
+            PYMONGO_STATS_AT_BATS: self.at_bats,
+            PYMONGO_TEAM: self.team_id,
+            PYMONGO_STATS_HOME_RUNS: self.home_runs,
+            PYMONGO_STATS_WALKS: self.walks,
+            PYMONGO_STATS_NUMBER_OF_GAMES: self.num_games,
+            PYMONGO_STATS_STRIKES: self.strikes,
+            PYMONGO_STATS_HITS: self.hits,
+            PYMONGO_STATS_BALLS: self.balls,
+            PYMONGO_STATS_RUNS: self.runs,
+        }

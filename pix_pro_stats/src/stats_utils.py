@@ -2,11 +2,156 @@ from pitching_stats import PitchingStats
 from general_stats import GeneralStats
 from batting_stats import BattingStats
 from player import Player
+from pymongo_utils import PyMongoUtils
 import pandas as pd
 from constants import *
 
 class StatsUtils:
 
+    @staticmethod
+    def calculate_pitching_hof_points(pitching_stats: PitchingStats, hof_pitching_stats, years_played):
+        points = 0
+        if years_played >= hof_pitching_stats[CSV_YEARS_PLAYED]:
+            points+=1
+        if StatsUtils.calculate_era(pitching_stats) <= hof_pitching_stats[CSV_ERA]:
+            points+=1
+        if pitching_stats.get_num_games() >= hof_pitching_stats[CSV_NUM_GAMES]:
+            points+=1
+        if (pitching_stats.get_innings_outs() / 3) >= hof_pitching_stats[CSV_INNINGS_PITCHED]:
+            points+=1
+        if pitching_stats.get_hits() <= hof_pitching_stats[CSV_HITS]:
+            points+=1
+        if pitching_stats.get_home_runs() <= hof_pitching_stats[CSV_HOME_RUNS]:
+            points+=1
+        if pitching_stats.get_walks() <= hof_pitching_stats[CSV_WALKS]:
+            points+=1
+        if pitching_stats.get_strike_outs() >= hof_pitching_stats[CSV_STRIKE_OUTS]:
+            points+=1
+        return points
+
+    @staticmethod
+    def calculate_all_time_player_pitching(all_player_pitching):
+        num_games = 0
+        innings_outs = 0
+        earned_runs = 0
+        num_games = 0
+        hits = 0 
+        home_runs = 0
+        walks = 0
+        strike_outs = 0
+        for player_pitching in all_player_pitching:
+            num_games += player_pitching[PYMONGO_STATS_NUMBER_OF_GAMES]
+            innings_outs += player_pitching[PYMONGO_STATS_INNINGS_OUTS]
+            earned_runs += player_pitching[PYMONGO_STATS_RUNS]
+            hits += player_pitching[PYMONGO_STATS_HITS]
+            home_runs += player_pitching[PYMONGO_STATS_HOME_RUNS]
+            walks += player_pitching[PYMONGO_STATS_WALKS]
+            strike_outs += player_pitching[PYMONGO_STATS_STRIKE_OUTS]
+
+        pitching_stats =  PitchingStats(num_games=num_games, innings_outs=innings_outs, earned_runs=earned_runs,
+                                        hits=hits, home_runs=home_runs, walks=walks, strike_outs=strike_outs)
+        return pitching_stats
+    
+    @staticmethod
+    def is_pitching_hofer(all_player_pitching, pitching_hof_stats):
+        player_all_time_pitching = StatsUtils.calculate_average_player_pitching(all_player_pitching)
+        points = StatsUtils.calculate_pitching_hof_points(player_all_time_pitching, pitching_hof_stats, len(all_player_pitching))
+        return points >= PITCHING_HOF_MIN
+    
+    @staticmethod
+    def calculate_all_time_player_batting(all_player_batting):
+        num_games = 0
+        plate_apperances = 0
+        at_bats = 0
+        runs = 0
+        hits = 0
+        singles = 0
+        doubles = 0
+        triples = 0
+        home_runs = 0
+        rbis=0
+        stolen_bases = 0
+        walks = 0
+        strike_outs = 0
+        sacrifice_flys = 0
+        hits_by_pitch = 0
+        for player_batting in all_player_batting:
+            num_games += player_batting[PYMONGO_STATS_NUMBER_OF_GAMES]
+            plate_apperances += player_batting[PYMONGO_STATS_PLATE_APPERANCES]
+            at_bats += player_batting[PYMONGO_STATS_AT_BATS]
+            runs += player_batting[PYMONGO_STATS_RUNS]
+            hits += player_batting[PYMONGO_STATS_HITS]
+            singles += player_batting[PYMONGO_STATS_SINGLES]
+            doubles += player_batting[PYMONGO_STATS_DOUBLES]
+            triples += player_batting[PYMONGO_STATS_TRIPLES]
+            home_runs += player_batting[PYMONGO_STATS_HOME_RUNS]
+            rbis += player_batting[PYMONGO_STATS_RBIS]
+            stolen_bases += player_batting[PYMONGO_STATS_STOLEN_BASES]
+            walks += player_batting[PYMONGO_STATS_WALKS]
+            strike_outs += player_batting[PYMONGO_STATS_STRIKE_OUTS]
+            sacrifice_flys += player_batting[PYMONGO_STATS_SACRIFICE_FLYS]
+            hits_by_pitch += player_batting[PYMONGO_STATS_HIT_BY_PITCH]
+        batting_stats = BattingStats(num_games=num_games, plate_apperances=plate_apperances, at_bats=at_bats,
+                                    runs=runs, hits=hits, singles=singles, doubles=doubles, triples=triples,
+                                    home_runs=home_runs, rbis=rbis, stolen_bases=stolen_bases, walks=walks,
+                                    strike_outs=strike_outs, sacrifice_flys=sacrifice_flys, hit_by_pitch=hits_by_pitch)
+        return batting_stats
+
+
+    @staticmethod
+    def calculate_batting_hof_points(batting_stats: BattingStats, hof_batting_stats, years_played):
+        points = 0
+        if years_played >= hof_batting_stats[CSV_YEARS_PLAYED]:
+            points+=1
+        if batting_stats.get_num_games() >= hof_batting_stats[CSV_NUM_GAMES]:
+            points+=1
+        if batting_stats.get_plate_apperances() >= hof_batting_stats[CSV_PLATE_APPERANCES]:
+            points+=1
+        if batting_stats.get_at_bats() >= hof_batting_stats[CSV_AT_BATS]:
+            points+=1
+        if batting_stats.get_runs() >= hof_batting_stats[CSV_RUNS]:
+            points+=1
+        if batting_stats.get_hits() >= hof_batting_stats[CSV_HITS]:
+            points+=1
+        if batting_stats.get_doubles() >= hof_batting_stats[CSV_DOUBLES]:
+            points+=1
+        if batting_stats.get_triples() >= hof_batting_stats[CSV_TRIPLES]:
+            points+=1
+        if batting_stats.get_home_runs() >= hof_batting_stats[CSV_HOME_RUNS]:
+            points+=1
+        if batting_stats.get_rbis() >= hof_batting_stats[CSV_RBIS]:
+            points+=1
+        if batting_stats.get_stolen_bases() >= hof_batting_stats[CSV_STOLEN_BASES]:
+            points+=1
+        if batting_stats.get_sacrifice_flys() >= hof_batting_stats[CSV_SACRIFICE_FLYS]:
+            points+=1
+        if StatsUtils.calculate_average(batting_stats) >= hof_batting_stats[CSV_BATTING_AVERAGE]:
+            points+=1
+        if StatsUtils.calculate_obp(batting_stats) >= hof_batting_stats[CSV_OBP]:
+            points+=1
+        if StatsUtils.calculate_slug(batting_stats) >= hof_batting_stats[CSV_SLUG]:
+            points+=1
+        if StatsUtils.calculate_ops(batting_stats) >= hof_batting_stats[CSV_OPS]:
+            points+=1
+        return points
+
+    @staticmethod
+    def is_batting_hofer(all_player_batting, batting_hof_stats):
+        player_all_time_batting = StatsUtils.calculate_average_player_pitching(all_player_batting)
+        points = StatsUtils.calculate_batting_hof_points(player_all_time_batting, batting_hof_stats, len(player_all_time_batting))
+        return points >= BATTING_HOF_MIN
+
+    @staticmethod
+    def is_hofer(player: Player, avg_pitching_hofer, avg_batting_hofer):
+        is_canidate = False
+        if player.get_position() == PITCHER:
+            all_player_pitching = PyMongoUtils.get_all_player_pitching(player.get_id())
+            is_canidate = StatsUtils.is_pitching_hofer(all_player_pitching, avg_pitching_hofer)
+        else:
+            all_player_batting = PyMongoUtils.get_all_player_batting(player.get_id())
+            is_canidate = StatsUtils.is_batting_hofer(all_player_batting, avg_batting_hofer)
+        return is_canidate
+    
     @staticmethod
     def calculate_average_cy_young_stats(cy_young_csv: str) -> dict:
         cy_young_all_time_stats = pd.read_csv(cy_young_csv, keep_default_na=False)

@@ -1,4 +1,4 @@
-
+from constants import *
 
 class Team:
 
@@ -40,3 +40,32 @@ class Team:
 
     def add_player(self, value):
         self.players.append(value)
+    
+    def to_model(self):
+        team_name = self.name
+        team_id = self.id 
+        is_user_team = self.is_user_team
+
+        team_model = {
+            PYMONGO_TEAM_NAME: team_name,
+            PYMONGO_TEAM_ID: team_id,
+            PYMONGO_TEAM_IS_USER_TEAM: is_user_team
+        }
+
+        return team_model
+
+    def create_team_record_model(self, record_id, season_id):
+        team_record_model = {
+            PYMONGO_TEAM: self.id,
+            PYMONGO_SEASON: season_id,
+            PYMONGO_RECORD: record_id
+        }
+        return team_record_model
+    
+    def create_team_player_season_model(self, player_id, season_id):
+        team_player_season_model = {
+            PYMONGO_PLAYER: player_id,
+            PYMONGO_TEAM: self.id,
+            PYMONGO_SEASON: season_id
+        }
+        return team_player_season_model

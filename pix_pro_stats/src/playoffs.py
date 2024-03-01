@@ -1,4 +1,5 @@
 from series import Series
+from constants import *
 
 class Playoffs:
     def __init__(self, al_wildcard, nl_wildcard, al_divisional_one, nl_divisional_one, al_divisional_two, nl_divisional_two,
@@ -67,3 +68,16 @@ class Playoffs:
     def set_world_series(self, value):
         self.world_series = value
 
+    def to_model(self,al_wildcard, nl_wildcard, al_divisional_one, nl_divisional_one, al_divisional_two,
+                nl_divisional_two, al_championship, nl_championship, world_series):
+        playoff_model = {
+            PYMONGO_NL_WILDCARD: nl_wildcard,
+            PYMONGO_AL_WILDCARD: al_wildcard,
+            PYMONGO_NL_DIVISIONAL_ONE: nl_divisional_one,
+            PYMONGO_AL_DIVISIONAL_ONE: al_divisional_one,
+            PYMONGO_NL_DIVISIONAL_TWO: nl_divisional_two,
+            PYMONGO_AL_DIVISIONAL_TWO: al_divisional_two,
+            PYMONGO_NL_CHAMPIONSHIP: nl_championship,
+            PYMONGO_AL_CHAMPIONSHIP: al_championship,
+            PYMONGO_WORLD_SERIES: world_series
+        }

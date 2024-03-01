@@ -1,5 +1,6 @@
 from team import Team
 from playoffs import Playoffs
+from constants import *
 
 
 class Season:
@@ -37,3 +38,18 @@ class Season:
 
     def get_awards(self):
         return self.awards
+    
+    def to_model(self, playoffs_id, regular_season_games):
+        season_model = {
+            PYMONGO_YEAR: self.year,
+            PYMONGO_PLAYOFFS: playoffs_id,
+            PYMONGO_REGULAR_SEASON: regular_season_games,
+        }
+        return season_model
+    
+    def create_season_awards_model(self, season_id, awards_id):
+        season_awards = {
+            PYMONGO_SEASON: season_id,
+            PYMONGO_AWARDS: awards_id
+        }
+        return season_awards

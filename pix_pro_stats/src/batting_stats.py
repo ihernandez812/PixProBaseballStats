@@ -1,11 +1,11 @@
 from general_stats import GeneralStats
-
+from constants import *
 class BattingStats(GeneralStats):
 
     def __init__(self,strike_outs, at_bats, singles, doubles, triples, home_runs, 
                 contact, sacrifice_flys, stolen_bases, walks, plate_apperances,
-                num_games, hits, rbis, strikes, balls, hit_by_pitch, runs) -> None:
-        GeneralStats.__init__(self, strike_outs, at_bats, walks, home_runs, num_games, strikes, hits, balls, runs)
+                num_games, hits, rbis, strikes, balls, hit_by_pitch, runs, team_id) -> None:
+        GeneralStats.__init__(self, strike_outs, at_bats, walks, home_runs, num_games, strikes, hits, balls, runs, team_id)
         self.singles = singles
         self.doubles = doubles
         self.triples = triples
@@ -70,5 +70,22 @@ class BattingStats(GeneralStats):
     def set_hit_by_pitch(self, value):
         self.hit_by_pitch = value
 
-
-   
+    def to_model(self, player_id, season_id):
+        general_stats = super().to_model()
+        batting_stats = {
+            PYMONGO_PLAYER: player_id,
+            PYMONGO_SEASON: season_id,
+            PYMONGO_STATS_SINGLES: self.singles,
+            PYMONGO_STATS_DOUBLES: self.doubles,
+            PYMONGO_STATS_TRIPLES: self.triples,
+            PYMONGO_STATS_CONTACT: self.contact,
+            PYMONGO_STATS_SACRIFICE_FLYS: self.sacrifice_flys,
+            PYMONGO_STATS_STOLEN_BASES: self.stolen_bases,
+            PYMONGO_STATS_PLATE_APPERANCES: self.plate_apperances,
+            PYMONGO_STATS_RBIS: self.rbis,
+            PYMONGO_STATS_HIT_BY_PITCH: self.hit_by_pitch,
+            
+        }
+        #combine the dictionarys
+        batting_stats.update(general_stats)
+        return batting_stats

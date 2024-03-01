@@ -1,3 +1,4 @@
+from constants import *
 
 class Series:
 
@@ -26,10 +27,25 @@ class Series:
     def get_series_winner(self):
         series_winner = None
         team_one_id = self.team_one.get_id()
-        team_two_id = self.team_two.get_id()
         if team_one_id == self.winner_id:
             series_winner = self.team_one
         else:
             series_winner = self.team_two
 
         return series_winner
+    
+    def to_model(self, games):
+        team_one = self.team_one.get_id()
+        team_two = self.team_two.get_id()
+        winner = self.get_series_winner().get_id()
+        
+        series_length = self.get_series_length()
+
+        series_model = {
+            PYMONGO_TEAM_ONE: team_one,
+            PYMONGO_TEAM_TWO: team_two,
+            PYMONGO_WINNER: winner,
+            PYMONGO_GAMES: games,
+            PYMONGO_SERIES_LENGTH: series_length
+        }
+        return series_model

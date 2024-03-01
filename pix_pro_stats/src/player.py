@@ -1,6 +1,6 @@
 from pitching_stats import PitchingStats
 from batting_stats import BattingStats
-
+from constants import *
 class Player:
 
     def __init__(self, id, name, handedness, position, pitcher_type, designated_hitter, season_batting, team_batting, season_pitching, team_pitching, is_hof):
@@ -81,3 +81,30 @@ class Player:
     
     def set_is_hof(self, is_hof):
         self.is_hof = is_hof
+    
+    def to_model(self):
+        player_id = self.get_id()
+        player_name = self.get_name()
+        player_handedness = self.get_handedness()
+        player_position = self.get_position()
+        player_pitcher_type = self.get_pitcher_type()
+        player_designated_hitter = self.get_designated_hitter()
+        player_is_hof = self.get_is_hof()
+
+        player_model = {
+            PYMONGO_PLAYER_ID: player_id,
+            PYMONGO_PLAYER_NAME: player_name,
+            PYMONGO_PLAYER_HANDEDNESS: player_handedness,
+            PYMONGO_PLAYER_POSISTION: player_position,
+            PYMONGO_PLAYER_PITCHER_TYPE: player_pitcher_type,
+            PYMONGO_PLAYER_DESIGNATED_HITTER: player_designated_hitter,
+            PYMONGO_PLAYER_IS_HOF: player_is_hof
+        }
+        return player_model
+
+    def create_hof_class_model(self):
+        hof_class_model = {
+            PYMONGO_PLAYER: self.id,
+            PYMONGO_YEAR: YEAR 
+        }
+        return hof_class_model

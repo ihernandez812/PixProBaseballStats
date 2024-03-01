@@ -46,6 +46,8 @@ PLAYOFFS_TEAM_ONE_SCORE='score0'
 PLAYOFFS_TEAM_TWO_SCORE='score1'
 CY_YOUNG_MIN=2
 MVP_MIN=3
+BATTING_HOF_MIN=9
+PITCHING_HOF_MIN=5
 MIN_GAMES=80
 
 
@@ -103,6 +105,8 @@ REGULAR_SEASON_DATA_FILE='/RegularSeasonData.json'
 POST_SEASON_DATA_FILE='/PostSeasonData.json'
 CY_YOUNG_STATS='./current_mlb_stats/cy_young_winner_stats.csv'
 MVP_STATS='./current_mlb_stats/mvp_stats.csv'
+BATTING_HOF_STATS='./current_mlb_stats/hof_batting.json'
+PITCHING_HOF_STATS='./current_mlb_stats/hof_pitching.json'
 
 CSV_WAR='WAR'
 CSV_NAME='Name'
@@ -118,6 +122,17 @@ CSV_SLUG='SLG'
 CSV_HOME_RUNS='HR'
 CSV_RBIS='RBI'
 CSV_STOLEN_BASES='SB'
+CSV_YEARS_PLAYED='Y'
+CSV_NUM_GAMES='G'
+CSV_HITS='H'
+CSV_RUNS='R'
+CSV_WALKS='BB'
+CSV_PLATE_APPERANCES='PA'
+CSV_AT_BATS='AB'
+CSV_DOUBLES='2B'
+CSV_TRIPLES='3B'
+CSV_SACRIFICE_FLYS='SF'
+CSV_OPS='OPS'
 EMPTY_STRING=''
 
 PYMONGO_URI='mongodb+srv://pix_pro_stats_user:{password}@cluster0.gbymskz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'
@@ -177,10 +192,13 @@ PYMONGO_AL_CHAMPIONSHIP='al_championship'
 PYMONGO_WORLD_SERIES='world_series'
 PYMONGO_GAMES_WON='games_won'
 PYMONGO_GAMES_PLAYED='games_played'
+PYMONGO_CY_YOUNG='cy_young'
+PYMONGO_MVP='mvp'
 PYMONGO_TEAM='team'
 PYMONGO_SEASON='season'
 PYMONGO_RECORD='record'
 PYMONGO_PLAYER='player'
+PYMONGO_AWARDS='awards'
 
 PYMONGO_GAME_COLLECTION='games'
 PYMONGO_SERIES_COLLECTION='series'
@@ -193,5 +211,7 @@ PYMONGO_PLAYER_COLLECTION='players'
 PYMONGO_BATTING_STATS_COLLECTION='batting_stats'
 PYMONGO_PITCHING_STATS_COLLECTION='pitching_stats'
 PYMONGO_SEASON_COLLECTION='seasons'
-
+PYMONGO_AWARDS_COLLECTION='awards'
+PYMONGO_SEASON_AWARDS_COLLECTION='season_awards'
+PYMONGO_HOF_CLASS_COLLECTION='hof_class'
 

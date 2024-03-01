@@ -15,7 +15,7 @@ from season import Season
 from playoffs import Playoffs
 from awards import Awards
 from mongodb_utils import Database
-from pymongo_utils import PymongoUtils
+from pymongo_utils import PyMongoUtils
 
 teams = {}
 
@@ -114,7 +114,7 @@ def create_record(season_obj, team):
     team_record = Record(games_won, games_played)
     team.set_record(team_record)
 
-def create_pitching_stats(pitching_obj):
+def create_pitching_stats(pitching_obj, curr_team=None):
     strike_outs = pitching_obj.get(STRIKE_OUTS, -1)
     at_bats = pitching_obj.get(AT_BATS, -1)
     innings_outs = pitching_obj.get(INNINGS_OUTS, -1)
@@ -128,10 +128,10 @@ def create_pitching_stats(pitching_obj):
     balls = pitching_obj.get(BALLS, -1)
     runs = pitching_obj.get(RUNS, -1)
 
-    player_pitching_stats = PitchingStats(strike_outs, at_bats, innings_outs, pitches, walks, home_runs, num_games, strikes, earned_runs, hits, balls, runs)
+    player_pitching_stats = PitchingStats(strike_outs, at_bats, innings_outs, pitches, walks, home_runs, num_games, strikes, earned_runs, hits, balls, runs, curr_team)
     return player_pitching_stats
 
-def create_batting_stats(batting_obj):
+def create_batting_stats(batting_obj, curr_team=None):
     strike_outs = batting_obj.get(STRIKE_OUTS, -1)
     at_bats = batting_obj.get(AT_BATS, -1)
     singles = batting_obj.get(SINGLES, -1)
@@ -152,7 +152,7 @@ def create_batting_stats(batting_obj):
     runs = batting_obj.get(RUNS, -1) 
 
     player_batting_stats = BattingStats(strike_outs, at_bats, singles, doubles, triples, home_runs, contact, sacrifice_flys, stolen_bases,
-                                        walks, plate_apperances, num_games, hits, rbis, strikes, balls, hit_by_pitch, runs)
+                                        walks, plate_apperances, num_games, hits, rbis, strikes, balls, hit_by_pitch, runs, curr_team)
 
     return player_batting_stats
 
@@ -160,7 +160,7 @@ def get_pitcher_type(pitching_obj):
     pitcher_type = pitching_obj.get(PLAYER_PITCHING_TYPE, 0)
     return pitcher_type
 
-def create_player(player_obj):
+def create_player(player_obj, curr_team):
     player_id = player_obj.get(PLAYER_ID, -1)
     name = player_obj.get(PLAYER_NAME, 'J. Doe')
     handedness = player_obj.get(PLAYER_HANDEDNESS, 1)
@@ -176,8 +176,8 @@ def create_player(player_obj):
     
     season_pitching = create_pitching_stats(season_pitching_obj)
     season_batting = create_batting_stats(season_batting_obj)
-    team_pitching = create_pitching_stats(team_pitching_obj)
-    team_batting = create_batting_stats(team_batting_obj)
+    team_pitching = create_pitching_stats(team_pitching_obj, curr_team)
+    team_batting = create_batting_stats(team_batting_obj, curr_team)
 
     is_hof = False
 
@@ -209,15 +209,19 @@ def create_teams():
         new_team = Team(team_id, team_name)
         teams[team_id] = new_team
 
-def create_awards(teams: list[Team]):
+def get_user_team(teams: list[Team]):
     user_team = None
+    for team in teams:
+        if team.get_is_user_team():
+            user_team = team
+    return user_team
+
+def create_awards(teams: list[Team]):
     cy_young_winner = None
     mvp_winner = None
     avg_cy_young_winner = StatsUtils.calculate_average_cy_young_stats(CY_YOUNG_STATS)
     avg_mvp_winner = StatsUtils.calculate_average_mvp_stats(MVP_STATS)
-    for team in teams:
-        if team.get_is_user_team():
-            user_team = team
+    user_team = get_user_team(teams)
     for player in user_team.get_players():
         if StatsUtils.is_cy_young_canidate(player, avg_cy_young_winner):
             cy_young_winner = StatsUtils.get_cy_young_winner(player, cy_young_winner, avg_cy_young_winner)
@@ -225,6 +229,22 @@ def create_awards(teams: list[Team]):
             mvp_winner = StatsUtils.get_mvp_winner(player, mvp_winner, avg_mvp_winner)
     awards = Awards(cy_young_winner, mvp_winner)
     return awards
+
+def create_hofs(teams: list[Team]):
+    avg_batting_hof = StatsUtils.get_average_batting_hof_stats(BATTING_HOF_STATS)
+    avg_pitching_hof = StatsUtils.get_average_pitching_hof_stats(PITCHING_HOF_STATS)
+    hof_class = []
+    user_team = get_user_team(teams)
+    for player in user_team.get_players():
+        is_hofer = False
+        if player.get_posistion() == PITCHER:
+            is_hofer = StatsUtils.is_pitching_hofer(player.get_id(), avg_pitching_hof)
+        else:
+            is_hofer = StatsUtils.is_batting_hofer(player.get_id(), avg_batting_hof)
+
+        if is_hofer:
+            hof_class.append(player)
+    return hof_class
 
 def convert_files():
     FileUtils.convert_files_to_plist()
@@ -236,7 +256,6 @@ def create_season():
     regular_season_games = create_regular_season()
     post_season = create_post_season()
     awards = create_awards(teams.values())
-
     team_list = teams.values()
     season = Season(YEAR, team_list, regular_season_games, post_season, awards)
     return season
@@ -246,16 +265,17 @@ if __name__ == '__main__':
     awards = season.get_awards()
     cy_young = awards.get_cy_young().get_name()
     mvp = awards.get_mvp().get_name()
-    print(cy_young, mvp)
-    # database = Database(uri=PYMONGO_URI)
-    # database.create_connection()
-    # database.ping_connection()
-    # database.set_database(PYMONGO_DATABASE_NAME)
-    # season_id = PymongoUtils.insert_season(season, database)
-    # season_teams = season.get_teams()
-    # PymongoUtils.insert_teams_records(season_teams, season_id, database)
-    # PymongoUtils.insert_teams_players_season(season_teams, season_id, database)
-    # PymongoUtils.insert_teams_players(season_teams, database)
-    # PymongoUtils.upsert_teams_players_stats(season_teams, season_id, database)
-    #database.close_connection()
+    database = Database(uri=PYMONGO_URI)
+    database.create_connection()
+    database.ping_connection()
+    database.set_database(PYMONGO_DATABASE_NAME)
+    season_id = PyMongoUtils.insert_season(season, database)
+    season_teams = season.get_teams()
+    PyMongoUtils.insert_teams_records(season_teams, season_id, database)
+    PyMongoUtils.insert_teams_players_season(season_teams, season_id, database)
+    PyMongoUtils.insert_teams_players(season_teams, database)
+    PyMongoUtils.upsert_teams_players_stats(season_teams, season_id, database)
+    hofers = create_hofs(season_teams)
+    PyMongoUtils.update_players_hof()
+    # database.close_connection()
     
