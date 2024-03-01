@@ -80,7 +80,7 @@ class PyMongoUtils:
         world_series = PyMongoUtils.insert_series(playoffs.get_world_series(), database)
 
         playoff_model = playoffs.to_model(al_wildcard, nl_wildcard, al_divisional_one, nl_divisional_one,
-                                          al_divisional_two, nl_divisional_two, al+al_championship, nl_championship,
+                                          al_divisional_two, nl_divisional_two, al_championship, nl_championship,
                                           world_series)
 
         playoffs_collection = database.get_collection(PYMONGO_PLAYOFFS_COLLECTION)
