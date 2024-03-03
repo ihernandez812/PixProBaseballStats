@@ -1,30 +1,32 @@
+from team import Team
+from game import Game
 from constants import *
 
 class Series:
 
-    def __init__(self, team_one, team_two, winner_id, games, series_length):
+    def __init__(self, team_one: Team, team_two: Team, winner_id: int, games: list[Game], series_length: int) -> None:
         self.team_one = team_one
         self.team_two = team_two
         self.winner_id = winner_id
         self.games = games
         self.series_length = series_length
 
-    def get_team_one(self):
+    def get_team_one(self) -> Team:
         return self.team_one
 
-    def get_team_two(self):
+    def get_team_two(self) -> Team:
         return self.team_two
 
-    def add_game(self, game):
+    def add_game(self, game: Game) -> None:
         self.games.append(game)
 
-    def get_games(self):
+    def get_games(self) -> list[Game]:
         return self.games
     
-    def get_series_length(self):
+    def get_series_length(self) -> int:
         return self.series_length
 
-    def get_series_winner(self):
+    def get_series_winner(self) -> Team:
         series_winner = None
         team_one_id = self.team_one.get_id()
         if team_one_id == self.winner_id:
@@ -34,7 +36,7 @@ class Series:
 
         return series_winner
     
-    def to_model(self, games):
+    def to_model(self, games: list[str]) -> dict[str, ]:
         team_one = self.team_one.get_id()
         team_two = self.team_two.get_id()
         winner = self.get_series_winner().get_id()

@@ -5,6 +5,7 @@ TEAM_GAMES_WON='gamesWon'
 TEAM_IS_USER_TEAM='isUserTeam'
 TEAM_PLAYERS='players'
 TEAM_NAMES='names'
+TEAM_NO_ID=-1
 
 PLAYER_STATS='stats'
 PLAYER_NAME='name'

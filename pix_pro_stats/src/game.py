@@ -2,30 +2,30 @@ from team import Team
 from constants import *
 
 class Game:
-    def __init__(self, team_one: Team, team_one_score: int, team_two: Team, team_two_score: int):
+    def __init__(self, team_one: Team, team_one_score: int, team_two: Team, team_two_score: int) -> None:
         self.team_one = team_one
         self.team_one_score = team_one_score
         self.team_two = team_two
         self.team_two_score = team_two_score
     
-    def get_team_one(self):
+    def get_team_one(self) -> Team:
         return self.team_one
 
-    def get_team_two(self):
+    def get_team_two(self) -> Team:
         return self.team_two
 
-    def get_team_one_score(self):
+    def get_team_one_score(self) -> int:
         return self.team_one_score
 
-    def get_team_two_score(self):
+    def get_team_two_score(self) -> int:
         return self.team_two_score
 
-    def get_winner(self):
+    def get_winner(self) -> Team:
         if self.team_one_score > self.team_two_score:
             return self.team_one
         else:
             return self.team_two
-    def to_model(self):
+    def to_model(self) -> dict[str,]:
         team_one = self.team_one.get_id()
         team_two = self.team_two.get_id()
         team_one_score = self.team_one_score

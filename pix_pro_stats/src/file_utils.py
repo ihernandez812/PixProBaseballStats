@@ -7,7 +7,7 @@ from date_time_encoder import DateTimeEncoder
 
 class FileUtils:
 
-    def read_json_file(file_path):
+    def read_json_file(file_path: str) -> dict:
         json_obj = {}
         with open(file_path, READ_FILE) as file:
             file_str = file.read()
@@ -15,12 +15,12 @@ class FileUtils:
         return json_obj
         
     @staticmethod
-    def change_file_type(file_path, new_file_type):
+    def change_file_type(file_path: str, new_file_type: str) -> None:
         file_name, file_type = os.path.splitext(file_path)
         os.rename(file_path, f'{file_name}{new_file_type}')
     
     @staticmethod
-    def change_file_ext(file_path, file_type):
+    def change_file_ext(file_path: str, file_type: str) -> str:
         print(file_path, file_path.split(PERIOD), os.path.splitext(file_path))
         file_name = os.path.splitext(file_path)[0]
         return f'{file_name}{file_type}'

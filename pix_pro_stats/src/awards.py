@@ -7,19 +7,19 @@ class Awards:
         self.cy_young = cy_young
         self.mvp = mvp
 
-    def get_cy_young(self):
+    def get_cy_young(self) -> Player:
         return self.cy_young
 
     def set_cy_young(self, value: Player):
         self.cy_young = value
 
-    def get_mvp(self):
+    def get_mvp(self) -> Player:
         return self.mvp
 
     def set_mvp(self, value: Player):
         self.mvp = value
     
-    def to_model(self):
+    def to_model(self) -> dict[str, str]:
         model = {}
         if self.cy_young and self.mvp:
             cy_young_id = self.cy_young.get_id()

@@ -3,7 +3,8 @@ from batting_stats import BattingStats
 from constants import *
 class Player:
 
-    def __init__(self, id, name, handedness, position, pitcher_type, designated_hitter, season_batting, team_batting, season_pitching, team_pitching, is_hof):
+    def __init__(self, id: str, name: str, handedness: int, position: int, pitcher_type: int, designated_hitter: bool, season_batting: BattingStats,
+                 team_batting: BattingStats, season_pitching: PitchingStats, team_pitching: PitchingStats, is_hof: bool):
         self.id = id
         self.name = name
         self.handedness = handedness
@@ -16,73 +17,73 @@ class Player:
         self.team_pitching = team_pitching
         self.is_hof = is_hof
 
-    def get_id(self):
+    def get_id(self) -> str:
         return self.id
 
-    def set_id(self, value):
+    def set_id(self, value: str):
         self.id = value
 
-    def get_name(self):
+    def get_name(self) -> str:
         return self.name
 
-    def set_name(self, value):
+    def set_name(self, value: str):
         self.name = value
 
-    def get_handedness(self):
+    def get_handedness(self) -> int:
         return self.handedness
 
-    def set_handedness(self, value):
+    def set_handedness(self, value: int):
         self.handedness = value
 
-    def get_position(self):
+    def get_position(self) -> int:
         return self.position
 
-    def set_position(self, value):
+    def set_position(self, value: int):
         self.position = value
 
-    def get_pitcher_type(self):
+    def get_pitcher_type(self) -> int:
         return self.pitcher_type
 
-    def set_pitcher_type(self, value):
+    def set_pitcher_type(self, value: int):
         self.pitcher_type = value
 
-    def get_designated_hitter(self):
+    def get_designated_hitter(self) -> bool:
         return self.designated_hitter
 
-    def set_designated_hitter(self, value):
+    def set_designated_hitter(self, value: bool):
         self.designated_hitter = value
 
-    def get_season_batting(self):
+    def get_season_batting(self) -> BattingStats:
         return self.season_batting
 
-    def set_season_batting(self, value):
+    def set_season_batting(self, value: BattingStats):
         self.season_batting = value
 
-    def get_team_batting(self):
+    def get_team_batting(self) -> BattingStats:
         return self.team_batting
 
-    def set_team_batting(self, value):
+    def set_team_batting(self, value: BattingStats):
         self.team_batting = value
 
-    def get_season_pitching(self):
+    def get_season_pitching(self) -> PitchingStats:
         return self.season_pitching
 
-    def set_season_pitching(self, value):
+    def set_season_pitching(self, value: PitchingStats):
         self.season_pitching = value
 
-    def get_team_pitching(self):
+    def get_team_pitching(self) -> PitchingStats:
         return self.team_pitching
 
-    def set_team_pitching(self, value):
+    def set_team_pitching(self, value: PitchingStats):
         self.team_pitching = value
     
-    def get_is_hof(self):
+    def get_is_hof(self) -> bool:
         return self.is_hof
     
-    def set_is_hof(self, is_hof):
+    def set_is_hof(self, is_hof: bool):
         self.is_hof = is_hof
     
-    def to_model(self):
+    def to_model(self) -> dict[str,]:
         player_id = self.get_id()
         player_name = self.get_name()
         player_handedness = self.get_handedness()
@@ -102,7 +103,7 @@ class Player:
         }
         return player_model
 
-    def create_hof_class_model(self):
+    def create_hof_class_model(self) -> dict[str, str]:
         hof_class_model = {
             PYMONGO_PLAYER: self.id,
             PYMONGO_YEAR: YEAR 

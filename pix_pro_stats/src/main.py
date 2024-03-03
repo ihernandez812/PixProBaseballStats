@@ -19,7 +19,7 @@ from pymongo_utils import PyMongoUtils
 
 teams = {}
 
-def create_game(game_obj):
+def create_game(game_obj: dict[str,]) -> Game:
     game = None
     league_type = game_obj.get(LEAGUE_TYPE,-1)
     if league_type == MAJOR_LEAGUE:
@@ -33,7 +33,7 @@ def create_game(game_obj):
     return game
 
 #Post season json file has diffrent keys so we need a diffrent method
-def create_post_season_game(post_season_game_obj):
+def create_post_season_game(post_season_game_obj: dict[str,]) -> Game:
     game = None
     team_one_id = post_season_game_obj.get(PLAYOFFS_TEAM_ONE_ID)
     team_one = teams.get(team_one_id)
@@ -44,7 +44,7 @@ def create_post_season_game(post_season_game_obj):
     game = Game(team_one, team_one_score, team_two, team_two_score)
     return game
 
-def create_series(post_season_obj, key, series_type=None):
+def create_series(post_season_obj: dict, key: str, series_type: str=None) -> Series:
     if series_type is not None:
         key = key.format(series=series_type)
     series_obj = post_season_obj.get(key, {})
@@ -63,12 +63,12 @@ def create_series(post_season_obj, key, series_type=None):
     series = Series(team_one, team_two, winner_id, series_games, series_length)
     return series
 
-def check_is_mlb_post_season(post_season_obj):
+def check_is_mlb_post_season(post_season_obj: dict[str,]) -> bool:
     world_series = post_season_obj.get(WORLD_SERIES, {})
     team_one_id = world_series.get(PLAYOFFS_TEAM_ONE_ID, -1)
     return team_one_id in list(teams.keys())
 
-def create_playoffs(post_season_obj):
+def create_playoffs(post_season_obj: dict[str,]) -> Playoffs:
     is_major_leauge = check_is_mlb_post_season(post_season_obj)
     playoffs = None
     if is_major_leauge:
@@ -86,7 +86,7 @@ def create_playoffs(post_season_obj):
     return playoffs
 
 
-def create_post_season():
+def create_post_season() -> Playoffs:
     post_season_path = PLAIN_TXT_FILES_PATH + POST_SEASON_DATA_FILE
     post_season_data = FileUtils.read_json_file(post_season_path)
     post_season_leagues = post_season_data.get(POST_SEASON_LEAGUES, [])
@@ -97,7 +97,7 @@ def create_post_season():
             break
     return post_season
 
-def create_regular_season():
+def create_regular_season() -> list[Game]:
     regular_season_path = PLAIN_TXT_FILES_PATH + REGULAR_SEASON_DATA_FILE
     regular_season_data = FileUtils.read_json_file(regular_season_path)
     regular_season_games = regular_season_data.get(FIXTURES, [])
@@ -108,13 +108,13 @@ def create_regular_season():
             games.append(new_game)
     return games
 
-def create_record(season_obj, team):
+def create_record(season_obj: dict[str,], team: Team) -> None:
     games_won = season_obj.get(GAMES_WON, -1)
     games_played = season_obj.get(GAMES_PLAYED, -1)
     team_record = Record(games_won, games_played)
     team.set_record(team_record)
 
-def create_pitching_stats(pitching_obj, curr_team=None):
+def create_pitching_stats(pitching_obj: dict[str,], curr_team: Team=None) -> PitchingStats:
     strike_outs = pitching_obj.get(STRIKE_OUTS, -1)
     at_bats = pitching_obj.get(AT_BATS, -1)
     innings_outs = pitching_obj.get(INNINGS_OUTS, -1)
@@ -127,11 +127,13 @@ def create_pitching_stats(pitching_obj, curr_team=None):
     hits = pitching_obj.get(HITS, -1)
     balls = pitching_obj.get(BALLS, -1)
     runs = pitching_obj.get(RUNS, -1)
-
-    player_pitching_stats = PitchingStats(strike_outs, at_bats, innings_outs, pitches, walks, home_runs, num_games, strikes, earned_runs, hits, balls, runs, curr_team)
+    team_id = -1
+    if curr_team:
+        team_id = curr_team.get_id()
+    player_pitching_stats = PitchingStats(strike_outs, at_bats, innings_outs, pitches, walks, home_runs, num_games, strikes, earned_runs, hits, balls, runs, team_id)
     return player_pitching_stats
 
-def create_batting_stats(batting_obj, curr_team=None):
+def create_batting_stats(batting_obj: dict[str,], curr_team: Team=None) -> BattingStats:
     strike_outs = batting_obj.get(STRIKE_OUTS, -1)
     at_bats = batting_obj.get(AT_BATS, -1)
     singles = batting_obj.get(SINGLES, -1)
@@ -150,17 +152,19 @@ def create_batting_stats(batting_obj, curr_team=None):
     balls = batting_obj.get(BALLS, -1)
     hit_by_pitch = batting_obj.get(HIT_BY_PITCH, -1)
     runs = batting_obj.get(RUNS, -1) 
-
+    team_id = -1
+    if curr_team:
+        team_id = curr_team.get_id()
     player_batting_stats = BattingStats(strike_outs, at_bats, singles, doubles, triples, home_runs, contact, sacrifice_flys, stolen_bases,
-                                        walks, plate_apperances, num_games, hits, rbis, strikes, balls, hit_by_pitch, runs, curr_team)
+                                        walks, plate_apperances, num_games, hits, rbis, strikes, balls, hit_by_pitch, runs, team_id)
 
     return player_batting_stats
 
-def get_pitcher_type(pitching_obj):
+def get_pitcher_type(pitching_obj: dict[str,]) -> int:
     pitcher_type = pitching_obj.get(PLAYER_PITCHING_TYPE, 0)
     return pitcher_type
 
-def create_player(player_obj, curr_team):
+def create_player(player_obj: dict[str,], curr_team: Team) -> Player:
     player_id = player_obj.get(PLAYER_ID, -1)
     name = player_obj.get(PLAYER_NAME, 'J. Doe')
     handedness = player_obj.get(PLAYER_HANDEDNESS, 1)
@@ -184,12 +188,12 @@ def create_player(player_obj, curr_team):
     player = Player(player_id, name, handedness, position, pitcher_type, designated_hitter, season_batting, team_batting, season_pitching, team_pitching, is_hof)
     return player
 
-def create_players(players_list, team):
+def create_players(players_list: list[dict[str,]], team: Team) -> None:
     for player_obj in players_list:
-        player = create_player(player_obj)
+        player = create_player(player_obj, team)
         team.add_player(player)
 
-def fill_teams():
+def fill_teams() -> None:
     for team_id, team in teams.items():
         team_file_path = PLAIN_TXT_FILES_PATH + TEAM_FILE.format(team_id=team_id)
         team_obj = FileUtils.read_json_file(team_file_path)
@@ -200,7 +204,7 @@ def fill_teams():
         is_user_team = team_obj.get(TEAM_IS_USER_TEAM, False)
         team.set_is_user_team(is_user_team)
 
-def create_teams():
+def create_teams() -> None:
     team_names_path = PLAIN_TXT_FILES_PATH + TEAM_NAMES_FILE 
     team_names_map = FileUtils.read_json_file(team_names_path)
     team_id_name_map = team_names_map.get(TEAM_NAMES, {})
@@ -209,14 +213,14 @@ def create_teams():
         new_team = Team(team_id, team_name)
         teams[team_id] = new_team
 
-def get_user_team(teams: list[Team]):
+def get_user_team(teams: list[Team]) -> Team:
     user_team = None
     for team in teams:
         if team.get_is_user_team():
             user_team = team
     return user_team
 
-def create_awards(teams: list[Team]):
+def create_awards(teams: list[Team]) -> Awards:
     cy_young_winner = None
     mvp_winner = None
     avg_cy_young_winner = StatsUtils.calculate_average_cy_young_stats(CY_YOUNG_STATS)
@@ -224,33 +228,35 @@ def create_awards(teams: list[Team]):
     user_team = get_user_team(teams)
     for player in user_team.get_players():
         if StatsUtils.is_cy_young_canidate(player, avg_cy_young_winner):
-            cy_young_winner = StatsUtils.get_cy_young_winner(player, cy_young_winner, avg_cy_young_winner)
+            cy_young_winner = StatsUtils.get_cy_young_winner(player, cy_young_winner)
         if StatsUtils.is_mvp_canidate(player, avg_mvp_winner):
-            mvp_winner = StatsUtils.get_mvp_winner(player, mvp_winner, avg_mvp_winner)
+            mvp_winner = StatsUtils.get_mvp_winner(player, mvp_winner)
     awards = Awards(cy_young_winner, mvp_winner)
     return awards
 
-def create_hofs(teams: list[Team]):
+def create_hofs(teams: list[Team], database: Database) -> list[Player]:
     avg_batting_hof = StatsUtils.get_average_batting_hof_stats(BATTING_HOF_STATS)
     avg_pitching_hof = StatsUtils.get_average_pitching_hof_stats(PITCHING_HOF_STATS)
     hof_class = []
     user_team = get_user_team(teams)
     for player in user_team.get_players():
         is_hofer = False
-        if player.get_posistion() == PITCHER:
-            is_hofer = StatsUtils.is_pitching_hofer(player.get_id(), avg_pitching_hof)
+        if player.get_position() == PITCHER:
+            all_time_pitching_stats = PyMongoUtils.get_all_player_pitching(player.get_id(),  database)
+            is_hofer = StatsUtils.is_pitching_hofer(all_time_pitching_stats, avg_pitching_hof)
         else:
-            is_hofer = StatsUtils.is_batting_hofer(player.get_id(), avg_batting_hof)
+            all_time_batting_stats = PyMongoUtils.get_all_player_batting(player.get_id(), database)
+            is_hofer = StatsUtils.is_batting_hofer(all_time_batting_stats, avg_batting_hof)
 
         if is_hofer:
             hof_class.append(player)
     return hof_class
 
-def convert_files():
+def convert_files() -> None:
     FileUtils.convert_files_to_plist()
     FileUtils.convert_files_to_json()
 
-def create_season():
+def create_season() -> Season:
     create_teams()
     fill_teams()
     regular_season_games = create_regular_season()
@@ -262,10 +268,7 @@ def create_season():
 
 if __name__ == '__main__':
     season = create_season()
-    awards = season.get_awards()
-    cy_young = awards.get_cy_young().get_name()
-    mvp = awards.get_mvp().get_name()
-    database = Database(uri=PYMONGO_URI)
+    database = Database(ip=PYMONGO_IP, port= PYMONGO_PORT)
     database.create_connection()
     database.ping_connection()
     database.set_database(PYMONGO_DATABASE_NAME)
@@ -275,7 +278,7 @@ if __name__ == '__main__':
     PyMongoUtils.insert_teams_players_season(season_teams, season_id, database)
     PyMongoUtils.insert_teams_players(season_teams, database)
     PyMongoUtils.upsert_teams_players_stats(season_teams, season_id, database)
-    hofers = create_hofs(season_teams)
-    PyMongoUtils.update_players_hof()
-    # database.close_connection()
+    hofers = create_hofs(season_teams, database)
+    PyMongoUtils.update_players_hof(hofers, database)
+    database.close_connection()
     

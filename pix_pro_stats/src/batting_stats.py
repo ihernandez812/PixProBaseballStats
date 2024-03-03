@@ -2,9 +2,10 @@ from general_stats import GeneralStats
 from constants import *
 class BattingStats(GeneralStats):
 
-    def __init__(self,strike_outs, at_bats, singles, doubles, triples, home_runs, 
-                contact, sacrifice_flys, stolen_bases, walks, plate_apperances,
-                num_games, hits, rbis, strikes, balls, hit_by_pitch, runs, team_id) -> None:
+    def __init__(self,strike_outs: int=None, at_bats: int=None, singles: int=None, doubles: int=None, triples: int=None, home_runs: int=None, 
+                contact: int=None, sacrifice_flys: int=None, stolen_bases: int=None, walks: int=None, plate_apperances: int=None,
+                num_games: int=None, hits: int=None, rbis: int=None, strikes: int=None, balls: int=None, hit_by_pitch: int=None,
+                runs: int=None, team_id: int=None) -> None:
         GeneralStats.__init__(self, strike_outs, at_bats, walks, home_runs, num_games, strikes, hits, balls, runs, team_id)
         self.singles = singles
         self.doubles = doubles
@@ -16,61 +17,61 @@ class BattingStats(GeneralStats):
         self.rbis = rbis
         self.hit_by_pitch = hit_by_pitch
 
-    def get_singles(self):
+    def get_singles(self) -> int:
         return self.singles
 
-    def set_singles(self, value):
+    def set_singles(self, value: int):
         self.singles = value
 
-    def get_doubles(self):
+    def get_doubles(self) -> int:
         return self.doubles
 
-    def set_doubles(self, value):
+    def set_doubles(self, value: int):
         self.doubles = value
 
-    def get_triples(self):
+    def get_triples(self) -> int:
         return self.triples
 
-    def set_triples(self, value):
+    def set_triples(self, value: int):
         self.triples = value
 
-    def get_contact(self):
+    def get_contact(self) -> int:
         return self.contact
 
-    def set_contact(self, value):
+    def set_contact(self, value: int):
         self.contact = value
 
-    def get_sacrifice_flys(self):
+    def get_sacrifice_flys(self) -> int:
         return self.sacrifice_flys
 
-    def set_sacrifice_flys(self, value):
+    def set_sacrifice_flys(self, value: int):
         self.sacrifice_flys = value
 
-    def get_stolen_bases(self):
+    def get_stolen_bases(self) -> int:
         return self.stolen_bases
 
-    def set_stolen_bases(self, value):
+    def set_stolen_bases(self, value: int):
         self.stolen_bases = value
 
-    def get_plate_apperances(self):
+    def get_plate_apperances(self) -> int:
         return self.plate_apperances
 
-    def set_plate_apperances(self, value):
+    def set_plate_apperances(self, value: int):
         self.plate_apperances = value
 
-    def get_rbis(self):
+    def get_rbis(self) -> int:
         return self.rbis
 
-    def set_rbis(self, value):
+    def set_rbis(self, value: int):
         self.rbis = value
 
-    def get_hit_by_pitch(self):
+    def get_hit_by_pitch(self) -> int:
         return self.hit_by_pitch
 
-    def set_hit_by_pitch(self, value):
+    def set_hit_by_pitch(self, value: int):
         self.hit_by_pitch = value
 
-    def to_model(self, player_id, season_id):
+    def to_model(self, player_id: str, season_id: str) -> dict[str,]:
         general_stats = super().to_model()
         batting_stats = {
             PYMONGO_PLAYER: player_id,

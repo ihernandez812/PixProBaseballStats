@@ -3,13 +3,14 @@ from general_stats import GeneralStats
 from batting_stats import BattingStats
 from player import Player
 from pymongo_utils import PyMongoUtils
+from file_utils import FileUtils
 import pandas as pd
 from constants import *
 
 class StatsUtils:
 
     @staticmethod
-    def calculate_pitching_hof_points(pitching_stats: PitchingStats, hof_pitching_stats, years_played):
+    def calculate_pitching_hof_points(pitching_stats: PitchingStats, hof_pitching_stats: dict[str,], years_played: int) -> int:
         points = 0
         if years_played >= hof_pitching_stats[CSV_YEARS_PLAYED]:
             points+=1
@@ -30,7 +31,7 @@ class StatsUtils:
         return points
 
     @staticmethod
-    def calculate_all_time_player_pitching(all_player_pitching):
+    def calculate_all_time_player_pitching(all_player_pitching: list[dict[str, int]]) -> PitchingStats:
         num_games = 0
         innings_outs = 0
         earned_runs = 0
@@ -47,19 +48,23 @@ class StatsUtils:
             home_runs += player_pitching[PYMONGO_STATS_HOME_RUNS]
             walks += player_pitching[PYMONGO_STATS_WALKS]
             strike_outs += player_pitching[PYMONGO_STATS_STRIKE_OUTS]
-
+        
         pitching_stats =  PitchingStats(num_games=num_games, innings_outs=innings_outs, earned_runs=earned_runs,
                                         hits=hits, home_runs=home_runs, walks=walks, strike_outs=strike_outs)
         return pitching_stats
     
     @staticmethod
-    def is_pitching_hofer(all_player_pitching, pitching_hof_stats):
-        player_all_time_pitching = StatsUtils.calculate_average_player_pitching(all_player_pitching)
+    def is_pitching_hofer(all_player_pitching: list[dict[str,]], pitching_hof_stats: dict[str,]) -> bool:
+        player_all_time_pitching = StatsUtils.calculate_all_time_player_pitching(all_player_pitching)
         points = StatsUtils.calculate_pitching_hof_points(player_all_time_pitching, pitching_hof_stats, len(all_player_pitching))
         return points >= PITCHING_HOF_MIN
     
     @staticmethod
-    def calculate_all_time_player_batting(all_player_batting):
+    def get_average_pitching_hof_stats(hof_pitching_stats_path: str) -> dict:
+        return FileUtils.read_json_file(hof_pitching_stats_path)
+    
+    @staticmethod
+    def calculate_all_time_player_batting(all_player_batting: dict[str,]) -> BattingStats:
         num_games = 0
         plate_apperances = 0
         at_bats = 0
@@ -99,7 +104,7 @@ class StatsUtils:
 
 
     @staticmethod
-    def calculate_batting_hof_points(batting_stats: BattingStats, hof_batting_stats, years_played):
+    def calculate_batting_hof_points(batting_stats: BattingStats, hof_batting_stats: dict[str,], years_played: int) -> int:
         points = 0
         if years_played >= hof_batting_stats[CSV_YEARS_PLAYED]:
             points+=1
@@ -136,13 +141,17 @@ class StatsUtils:
         return points
 
     @staticmethod
-    def is_batting_hofer(all_player_batting, batting_hof_stats):
-        player_all_time_batting = StatsUtils.calculate_average_player_pitching(all_player_batting)
-        points = StatsUtils.calculate_batting_hof_points(player_all_time_batting, batting_hof_stats, len(player_all_time_batting))
+    def is_batting_hofer(all_player_batting: list[dict[str,]], batting_hof_stats: dict[str,]) -> bool:
+        player_all_time_batting = StatsUtils.calculate_all_time_player_batting(all_player_batting)
+        points = StatsUtils.calculate_batting_hof_points(player_all_time_batting, batting_hof_stats, len(all_player_batting))
         return points >= BATTING_HOF_MIN
 
     @staticmethod
-    def is_hofer(player: Player, avg_pitching_hofer, avg_batting_hofer):
+    def get_average_batting_hof_stats(hof_batting_stats_path: str) -> dict:
+        return FileUtils.read_json_file(hof_batting_stats_path)
+
+    @staticmethod
+    def is_hofer(player: Player, avg_pitching_hofer: dict[str,], avg_batting_hofer: dict[str,]) -> bool:
         is_canidate = False
         if player.get_position() == PITCHER:
             all_player_pitching = PyMongoUtils.get_all_player_pitching(player.get_id())
@@ -153,7 +162,7 @@ class StatsUtils:
         return is_canidate
     
     @staticmethod
-    def calculate_average_cy_young_stats(cy_young_csv: str) -> dict:
+    def calculate_average_cy_young_stats(cy_young_csv: str) -> dict[str, float]:
         cy_young_all_time_stats = pd.read_csv(cy_young_csv, keep_default_na=False)
         cy_young_all_time_stats.fillna(EMPTY_STRING)
         row_count = 0
@@ -175,7 +184,7 @@ class StatsUtils:
     
 
     @staticmethod
-    def calculate_average_mvp_stats(mvp_csv: str) -> dict:
+    def calculate_average_mvp_stats(mvp_csv: str) -> dict[str, float]:
         mvp_all_time_stats = pd.read_csv(mvp_csv, keep_default_na=False)
         mvp_all_time_stats.fillna(EMPTY_STRING)
         row_count = 0 
@@ -211,7 +220,7 @@ class StatsUtils:
         }
     
     @staticmethod
-    def calculate_cy_young_tie_breaker(player_one: Player, player_two: Player):
+    def calculate_cy_young_tie_breaker(player_one: Player, player_two: Player) -> Player:
         player_one_points = 0
         player_two_points = 0
         player_one_pitching = player_one.get_season_pitching()
@@ -249,7 +258,7 @@ class StatsUtils:
     
 
     @staticmethod
-    def get_cy_young_winner(player: Player, curr_winner: Player, stats: dict):
+    def get_cy_young_winner(player: Player, curr_winner: Player):
         if curr_winner is None:
             curr_winner = player
         else:
@@ -259,7 +268,7 @@ class StatsUtils:
         return curr_winner
     
     @staticmethod
-    def calculate_cy_young_points(player_pitching: PitchingStats, stats: dict) -> int:
+    def calculate_cy_young_points(player_pitching: PitchingStats, stats: dict[str,]) -> int:
         points = 0
         era = StatsUtils.calculate_era(player_pitching)
         strikes_per_inning = StatsUtils.calculate_strikes_outs_per_inning(player_pitching)
@@ -273,7 +282,7 @@ class StatsUtils:
         return points
 
     @staticmethod
-    def is_cy_young_canidate(player: Player, stats: dict):
+    def is_cy_young_canidate(player: Player, stats: dict) -> bool:
         is_canidate = False
         if player.get_position() == PITCHER:
             player_pitching = player.get_season_pitching()
@@ -283,7 +292,7 @@ class StatsUtils:
         return is_canidate
 
     @staticmethod
-    def calculate_mvp_tie_breaker(player_one: Player, player_two: Player):
+    def calculate_mvp_tie_breaker(player_one: Player, player_two: Player) -> Player:
         player_one_points = 0
         player_two_points = 0
         player_one_batting = player_one.get_season_batting()
@@ -354,7 +363,7 @@ class StatsUtils:
         return winner
     
     @staticmethod
-    def get_mvp_winner(player: Player, curr_winner: Player, stats: dict):
+    def get_mvp_winner(player: Player, curr_winner: Player) -> Player:
         if curr_winner is None:
             curr_winner = player
         else:
@@ -364,7 +373,7 @@ class StatsUtils:
         return curr_winner
     
     @staticmethod
-    def calculate_mvp_points(player_batting: BattingStats, stats: dict):
+    def calculate_mvp_points(player_batting: BattingStats, stats: dict) -> int:
         points = 0
         batting_average = StatsUtils.calculate_average(player_batting)
         obp = StatsUtils.calculate_obp(player_batting)
@@ -391,7 +400,7 @@ class StatsUtils:
         return points
 
     @staticmethod
-    def is_mvp_canidate(player: Player, stats: dict):
+    def is_mvp_canidate(player: Player, stats: dict[str,]) -> Player:
         is_canidate = False
         if player.get_position() != PITCHER:
             player_batting = player.get_season_batting()

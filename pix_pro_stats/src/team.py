@@ -1,8 +1,10 @@
+from record import Record
+from player import Player
 from constants import *
 
 class Team:
 
-    def __init__(self, id, name):
+    def __init__(self, id: int, name: str) -> None:
         self.id = id
         self.name = name
         self.is_user_team = False
@@ -11,37 +13,37 @@ class Team:
 
 
 
-    def get_id(self):
+    def get_id(self) -> int:
         return self.id
 
-    def set_id(self, value):
+    def set_id(self, value: int):
         self.id = value
 
-    def get_name(self):
+    def get_name(self) -> str:
         return self.name
 
-    def set_name(self, value):
+    def set_name(self, value: str):
         self.name = value
 
-    def get_is_user_team(self):
+    def get_is_user_team(self) -> bool:
         return self.is_user_team
 
-    def set_is_user_team(self, value):
+    def set_is_user_team(self, value: bool):
         self.is_user_team = value
 
-    def get_record(self):
+    def get_record(self) -> Record:
         return self.record
 
-    def set_record(self, value):
+    def set_record(self, value: Record):
         self.record = value
 
-    def get_players(self):
+    def get_players(self) -> list[Player]:
         return self.players
 
-    def add_player(self, value):
+    def add_player(self, value: Player):
         self.players.append(value)
     
-    def to_model(self):
+    def to_model(self) -> dict[str,]:
         team_name = self.name
         team_id = self.id 
         is_user_team = self.is_user_team
@@ -54,7 +56,7 @@ class Team:
 
         return team_model
 
-    def create_team_record_model(self, record_id, season_id):
+    def create_team_record_model(self, record_id: str, season_id: str) -> dict[str,]:
         team_record_model = {
             PYMONGO_TEAM: self.id,
             PYMONGO_SEASON: season_id,
@@ -62,7 +64,7 @@ class Team:
         }
         return team_record_model
     
-    def create_team_player_season_model(self, player_id, season_id):
+    def create_team_player_season_model(self, player_id: str, season_id: str) -> dict[str,]:
         team_player_season_model = {
             PYMONGO_PLAYER: player_id,
             PYMONGO_TEAM: self.id,
