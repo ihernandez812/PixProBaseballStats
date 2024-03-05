@@ -241,12 +241,14 @@ def create_hofs(teams: list[Team], database: Database) -> list[Player]:
     user_team = get_user_team(teams)
     for player in user_team.get_players():
         is_hofer = False
-        if player.get_position() == PITCHER:
-            all_time_pitching_stats = PyMongoUtils.get_all_player_pitching(player.get_id(),  database)
-            is_hofer = StatsUtils.is_pitching_hofer(all_time_pitching_stats, avg_pitching_hof)
-        else:
-            all_time_batting_stats = PyMongoUtils.get_all_player_batting(player.get_id(), database)
-            is_hofer = StatsUtils.is_batting_hofer(all_time_batting_stats, avg_batting_hof)
+        #if they are already a hofer don't add them again
+        if not player.is_hof():
+            if player.get_position() == PITCHER:
+                all_time_pitching_stats = PyMongoUtils.get_all_player_pitching(player.get_id(),  database)
+                is_hofer = StatsUtils.is_pitching_hofer(all_time_pitching_stats, avg_pitching_hof)
+            else:
+                all_time_batting_stats = PyMongoUtils.get_all_player_batting(player.get_id(), database)
+                is_hofer = StatsUtils.is_batting_hofer(all_time_batting_stats, avg_batting_hof)
 
         if is_hofer:
             hof_class.append(player)
@@ -267,8 +269,12 @@ def create_season() -> Season:
     return season
 
 if __name__ == '__main__':
+    #convert_files()
     season = create_season()
-    database = Database(ip=PYMONGO_IP, port= PYMONGO_PORT)
+    mongo_pass = FileUtils.get_mongo_password()
+    mongo_connection = PYMONGO_URI.format(password = mongo_pass)
+   
+    database = Database(uri=mongo_connection)
     database.create_connection()
     database.ping_connection()
     database.set_database(PYMONGO_DATABASE_NAME)

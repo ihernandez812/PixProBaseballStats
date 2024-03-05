@@ -35,6 +35,7 @@ class PyMongoUtils:
         awards_id = awards_collection.insert_one(awards_model).inserted_id
         return str(awards_id)
     
+    #probably don't need this but I'll leave it in just in case
     @staticmethod
     def insert_season_to_awards(season: Season, awards_id: str, season_id: str, database: Database) -> None:
         season_awards = season.create_season_awards_model(season_id, awards_id)

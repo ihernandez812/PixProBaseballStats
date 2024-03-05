@@ -108,6 +108,7 @@ CY_YOUNG_STATS='./current_mlb_stats/cy_young_winner_stats.csv'
 MVP_STATS='./current_mlb_stats/mvp_stats.csv'
 BATTING_HOF_STATS='./current_mlb_stats/hof_batting.json'
 PITCHING_HOF_STATS='./current_mlb_stats/hof_pitching.json'
+PYMONGO_CONFIG='./config/password.json'
 
 CSV_WAR='WAR'
 CSV_NAME='Name'
@@ -136,6 +137,7 @@ CSV_SACRIFICE_FLYS='SF'
 CSV_OPS='OPS'
 EMPTY_STRING=''
 
+PYMONGO_PASS='mongodb_password'
 PYMONGO_URI='mongodb+srv://pix_pro_stats_user:{password}@cluster0.gbymskz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'
 PYMONGO_IP='localhost'
 PYMONGO_PORT=27017

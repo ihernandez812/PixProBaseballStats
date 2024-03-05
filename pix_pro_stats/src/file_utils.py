@@ -7,6 +7,10 @@ from date_time_encoder import DateTimeEncoder
 
 class FileUtils:
 
+    def get_mongo_password() -> str:
+        mongo_config = FileUtils.read_json_file(PYMONGO_CONFIG)
+        return mongo_config.get(PYMONGO_PASS)
+
     def read_json_file(file_path: str) -> dict:
         json_obj = {}
         with open(file_path, READ_FILE) as file:
@@ -46,18 +50,18 @@ class FileUtils:
     def convert_files_to_plist():
         files = [os.path.join(PLAIN_TXT_FILES_PATH, file) for file in  os.listdir(PLAIN_TXT_FILES_PATH) if os.path.isfile(os.path.join(PLAIN_TXT_FILES_PATH, file))]
         for file in files:
-            FileUtils.change_file_type(file, PLIST_FILE_EXT)
+            if 'DS_STORE' not in file:
+                FileUtils.change_file_type(file, PLIST_FILE_EXT)
+            
     
     @staticmethod
     def convert_files_to_json():
         files = [os.path.join(PLAIN_TXT_FILES_PATH, file) for file in  os.listdir(PLAIN_TXT_FILES_PATH) if os.path.isfile(os.path.join(PLAIN_TXT_FILES_PATH, file))]
         for file in files:
-            print(file)
             if 'DS_Store' not in file:
                 file_obj = open(file, READ_FILE_BYTES)
                 json_path = FileUtils.change_file_ext(file, JSON_FILE_EXT)
                 json_file = json.dumps(FileUtils.bplist_dict(file_obj), cls=DateTimeEncoder, indent=4)
-                print(json_path, file)
                 os.remove(file)
                 with open(json_path, WRITE_FILE) as f:
                     f.write(json_file)
