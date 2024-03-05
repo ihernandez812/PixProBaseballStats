@@ -161,12 +161,12 @@ def create_batting_stats(batting_obj: dict[str,], curr_team: Team=None) -> Batti
     return player_batting_stats
 
 def get_pitcher_type(pitching_obj: dict[str,]) -> int:
-    pitcher_type = pitching_obj.get(PLAYER_PITCHING_TYPE, 0)
+    pitcher_type = pitching_obj.get(PLAYER_PITCHING_TYPE, -1)
     return pitcher_type
 
 def create_player(player_obj: dict[str,], curr_team: Team) -> Player:
     player_id = player_obj.get(PLAYER_ID, -1)
-    name = player_obj.get(PLAYER_NAME, 'J. Doe')
+    name = player_obj.get(PLAYER_NAME, 'N. Name')
     handedness = player_obj.get(PLAYER_HANDEDNESS, 1)
     position = player_obj.get(PLAYER_POSITION, 0)
     pitching_obj = player_obj.get(PLAYER_PITCHING, {})
