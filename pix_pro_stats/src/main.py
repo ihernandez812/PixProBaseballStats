@@ -14,8 +14,7 @@ from series import Series
 from season import Season
 from playoffs import Playoffs
 from awards import Awards
-from mongodb_utils import Database
-from pymongo_utils import PyMongoUtils
+import json
 
 teams = {}
 
@@ -234,7 +233,7 @@ def create_awards(teams: list[Team]) -> Awards:
     awards = Awards(cy_young_winner, mvp_winner)
     return awards
 
-def create_hofs(teams: list[Team], database: Database) -> list[Player]:
+def create_hofs(teams: list[Team]) -> list[Player]:
     avg_batting_hof = StatsUtils.get_average_batting_hof_stats(BATTING_HOF_STATS)
     avg_pitching_hof = StatsUtils.get_average_pitching_hof_stats(PITCHING_HOF_STATS)
     hof_class = []
@@ -244,10 +243,10 @@ def create_hofs(teams: list[Team], database: Database) -> list[Player]:
         #if they are already a hofer don't add them again
         if not player.is_hof():
             if player.get_position() == PITCHER:
-                all_time_pitching_stats = PyMongoUtils.get_all_player_pitching(player.get_id(),  database)
+                all_time_pitching_stats = {} #TODO need to get all time stats from json file 
                 is_hofer = StatsUtils.is_pitching_hofer(all_time_pitching_stats, avg_pitching_hof)
             else:
-                all_time_batting_stats = PyMongoUtils.get_all_player_batting(player.get_id(), database)
+                all_time_batting_stats = {} #TODO need to get all time stats from json file 
                 is_hofer = StatsUtils.is_batting_hofer(all_time_batting_stats, avg_batting_hof)
 
         if is_hofer:
@@ -268,23 +267,15 @@ def create_season() -> Season:
     season = Season(YEAR, team_list, regular_season_games, post_season, awards)
     return season
 
+
+
 if __name__ == '__main__':
     #convert_files()
     season = create_season()
-    mongo_pass = FileUtils.get_mongo_password()
-    mongo_connection = PYMONGO_URI.format(password = mongo_pass)
-   
-    database = Database(uri=mongo_connection)
-    database.create_connection()
-    database.ping_connection()
-    database.set_database(PYMONGO_DATABASE_NAME)
-    season_id = PyMongoUtils.insert_season(season, database)
     season_teams = season.get_teams()
-    PyMongoUtils.insert_teams_records(season_teams, season_id, database)
-    PyMongoUtils.insert_teams_players_season(season_teams, season_id, database)
-    PyMongoUtils.insert_teams_players(season_teams, database)
-    PyMongoUtils.upsert_teams_players_stats(season_teams, season_id, database)
-    hofers = create_hofs(season_teams, database)
-    PyMongoUtils.update_players_hof(hofers, database)
-    database.close_connection()
+    season_dict = season.to_dict()
+    with open(SEASONS, 'w') as f:
+        f.write(json.dumps(season_dict))
+    print('done')
+    #hofers = create_hofs(season_teams)
     

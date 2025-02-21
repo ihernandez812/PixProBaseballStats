@@ -32,3 +32,17 @@ class Awards:
             raise ValueError('Cy Young or MVP is None')
 
         return model
+    
+    def to_dict(self) -> dict[str,]:
+        model = {}
+        if self.cy_young and self.mvp:
+            cy_young_id = self.cy_young.get_id()
+            mvp_id = self.mvp.get_id()
+            model =  {
+                PYMONGO_CY_YOUNG: cy_young_id,
+                PYMONGO_MVP: mvp_id
+            }
+        else:
+            raise ValueError('Cy Young or MVP is None')
+
+        return model

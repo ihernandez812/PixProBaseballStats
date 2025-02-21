@@ -9,7 +9,7 @@ class Team:
         self.name = name
         self.is_user_team = False
         self.record = None
-        self.players = []
+        self.players:  list[Player] = []
 
 
 
@@ -71,3 +71,17 @@ class Team:
             PYMONGO_SEASON: season_id
         }
         return team_player_season_model
+    
+    def to_dict(self) -> dict[str,]:
+        team_name = self.name
+        team_id = self.id 
+        is_user_team = self.is_user_team
+        team_model = {
+            PYMONGO_TEAM_NAME: team_name,
+            PYMONGO_TEAM_ID: team_id,
+            PYMONGO_TEAM_IS_USER_TEAM: is_user_team,
+            PYMONGO_RECORD: self.record.to_dict(),
+            PYMONGO_PLAYER_COLLECTION: [player.to_dict() for player in self.players]
+        }
+
+        return team_model

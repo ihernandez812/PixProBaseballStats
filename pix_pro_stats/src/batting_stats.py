@@ -90,3 +90,20 @@ class BattingStats(GeneralStats):
         #combine the dictionarys
         batting_stats.update(general_stats)
         return batting_stats
+    
+    def to_dict(self) -> dict[str,]:
+        general_stats = super().to_dict()
+        batting_stats = {
+            PYMONGO_STATS_SINGLES: self.singles,
+            PYMONGO_STATS_DOUBLES: self.doubles,
+            PYMONGO_STATS_TRIPLES: self.triples,
+            PYMONGO_STATS_CONTACT: self.contact,
+            PYMONGO_STATS_SACRIFICE_FLYS: self.sacrifice_flys,
+            PYMONGO_STATS_STOLEN_BASES: self.stolen_bases,
+            PYMONGO_STATS_PLATE_APPERANCES: self.plate_apperances,
+            PYMONGO_STATS_RBIS: self.rbis,
+            PYMONGO_STATS_HIT_BY_PITCH: self.hit_by_pitch,
+        }
+        #combine the dictionarys
+        batting_stats.update(general_stats)
+        return batting_stats

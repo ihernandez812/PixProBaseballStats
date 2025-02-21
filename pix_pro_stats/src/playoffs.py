@@ -82,3 +82,17 @@ class Playoffs:
             PYMONGO_WORLD_SERIES: world_series
         }
         return playoff_model
+    
+    def to_dict(self) -> dict[str,]:
+        playoff_model = {
+            PYMONGO_NL_WILDCARD: self.nl_wildcard.to_dict(),
+            PYMONGO_AL_WILDCARD: self.al_wildcard.to_dict(),
+            PYMONGO_NL_DIVISIONAL_ONE: self.nl_divisional_one.to_dict(),
+            PYMONGO_AL_DIVISIONAL_ONE: self.al_divisional_one.to_dict(),
+            PYMONGO_NL_DIVISIONAL_TWO: self.nl_divisional_two.to_dict(),
+            PYMONGO_AL_DIVISIONAL_TWO: self.al_divisional_two.to_dict(),
+            PYMONGO_NL_CHAMPIONSHIP: self.nl_championship.to_dict(),
+            PYMONGO_AL_CHAMPIONSHIP: self.al_championship.to_dict(),
+            PYMONGO_WORLD_SERIES: self.world_series.to_dict()
+        }
+        return playoff_model

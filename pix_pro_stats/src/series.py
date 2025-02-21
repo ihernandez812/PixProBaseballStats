@@ -51,3 +51,20 @@ class Series:
             PYMONGO_SERIES_LENGTH: series_length
         }
         return series_model
+    
+
+    def to_dict(self) -> dict[str, ]:
+        team_one = self.team_one.get_id()
+        team_two = self.team_two.get_id()
+        winner = self.get_series_winner().get_id()
+        
+        series_length = self.get_series_length()
+
+        series_model = {
+            PYMONGO_TEAM_ONE: team_one,
+            PYMONGO_TEAM_TWO: team_two,
+            PYMONGO_WINNER: winner,
+            PYMONGO_GAMES: [game.to_dict() for game in self.games],
+            PYMONGO_SERIES_LENGTH: series_length
+        }
+        return series_model

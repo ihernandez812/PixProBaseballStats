@@ -2,7 +2,9 @@ from team import Team
 from playoffs import Playoffs
 from game import Game
 from awards import Awards
+from player import Player
 from constants import *
+import json
 
 
 class Season:
@@ -13,6 +15,7 @@ class Season:
         self.regular_season = regular_season
         self.teams = teams
         self.awards = awards
+        self.hof_class: list[Player] = []
 
     def get_year(self) -> str:
         return self.year 
@@ -41,6 +44,12 @@ class Season:
     def get_awards(self) -> Awards:
         return self.awards
     
+    def set_hof_class(self, players : list[Player]) -> None:
+        self.hof_class = players
+    
+    def get_hof_class(self) -> list[Player]:
+        return self.hof_class
+    
     def to_model(self, playoffs_id: str, awards_id: str, regular_season_games: list[str]) -> dict[str,]:
         season_model = {
             PYMONGO_YEAR: self.year,
@@ -50,6 +59,23 @@ class Season:
         }
         return season_model
     
+    def to_dict(self) -> dict[str,]:
+        return {
+            PYMONGO_YEAR: self.year,
+            PYMONGO_PLAYOFFS: self.playoffs.to_dict(),
+            PYMONGO_REGULAR_SEASON: [game.to_dict() for game in self.regular_season],
+            PYMONGO_TEAMS: [team.to_dict() for team in self.teams],
+            PYMONGO_AWARDS: self.awards.to_dict(),
+            PYMONGO_HOF_CLASS_COLLECTION: [player.to_dict() for player in self.hof_class]
+        }
+        
+
+    def to_json(self):
+        return json.dumps(
+            self.__dict__, 
+            sort_keys=True,
+            indent=4)
+
     def create_season_awards_model(self, season_id: str, awards_id: str) -> dict[str, str]:
         season_awards = {
             PYMONGO_SEASON: season_id,
