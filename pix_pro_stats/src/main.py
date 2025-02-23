@@ -345,7 +345,7 @@ if __name__ == '__main__':
         season_dict = season.to_dict()
         hofers.extend(hof_class)
         season_dict[PYMONGO_TEAM_SEASON_PLAYERS_COLLECTION] = season_team_to_players
-        season_dict[PYMONGO_TEAM_RECORD_COLLECTION] = season_team_to_players
+        season_dict[PYMONGO_TEAM_RECORD_COLLECTION] = season_team_to_record
         current_seasons.append(season_dict)
         leauge_dict = {
             PYMONGO_TEAM_COLLECTION: team_list,
