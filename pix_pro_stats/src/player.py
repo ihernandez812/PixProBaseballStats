@@ -103,7 +103,7 @@ class Player:
         }
         return player_model
     
-    def to_dict(self) -> dict[str,]:
+    def to_dict(self, season_year: int, current_player_pitching: list, current_player_batting: list) -> dict[str,]:
         player_id = self.get_id()
         player_name = self.get_name()
         player_handedness = self.get_handedness()
@@ -112,15 +112,17 @@ class Player:
         player_designated_hitter = self.get_designated_hitter()
         player_is_hof = self.get_is_hof()
         player_season_pitching = {}
-        player_team_pitching = {}
+        # player_team_pitching = {}
         player_season_batting = {}
-        player_team_batting = {}
+        # player_team_batting = {}
         if player_position == PITCHER:
-            player_season_pitching = self.get_season_pitching().to_dict()
-            player_team_pitching = self.get_team_pitching().to_dict()
+            player_season_pitching = self.get_season_pitching().to_dict(season_year)
+            current_player_pitching.append(player_season_pitching)
+            # player_team_pitching = self.get_team_pitching().to_dict()
         else:
-            player_season_batting = self.get_season_batting().to_dict()
-            player_team_batting = self.get_team_batting().to_dict()
+            player_season_batting = self.get_season_batting().to_dict(season_year)
+            current_player_batting.append(player_season_batting)
+            # player_team_batting = self.get_team_batting().to_dict()
 
         player_model = {
             PYMONGO_PLAYER_ID: player_id,
@@ -129,10 +131,10 @@ class Player:
             PYMONGO_PLAYER_POSISTION: player_position,
             PYMONGO_PLAYER_PITCHER_TYPE: player_pitcher_type,
             PYMONGO_PLAYER_DESIGNATED_HITTER: player_designated_hitter,
-            PYMONGO_SEASON_PITCHING_STATS_COLLECTION: player_season_pitching,
-            PYMONGO_TEAM_PITCHING_STATS_COLLECTION: player_team_pitching,
-            PYMONGO_SEASON_BATTING_STATS_COLLECTION: player_season_batting,
-            PYMONGO_TEAM_BATTING_STATS_COLLECTION: player_team_batting,
+            PYMONGO_PITCHING_STATS_COLLECTION: current_player_pitching,
+            # PYMONGO_TEAM_PITCHING_STATS_COLLECTION: player_team_pitching,
+            PYMONGO_BATTING_STATS_COLLECTION: current_player_batting,
+            # PYMONGO_TEAM_BATTING_STATS_COLLECTION: player_team_batting,
             PYMONGO_PLAYER_IS_HOF: player_is_hof
         }
         return player_model

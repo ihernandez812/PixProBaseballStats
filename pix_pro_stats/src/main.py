@@ -1,5 +1,5 @@
 from os import listdir, remove
-from os.path import isfile, join
+from os.path import isfile, join, exists
 from pathlib import Path
 from constants import *    
 from file_utils import FileUtils
@@ -233,24 +233,23 @@ def create_awards(teams: list[Team]) -> Awards:
     awards = Awards(cy_young_winner, mvp_winner)
     return awards
 
-def create_hofs(teams: list[Team]) -> list[Player]:
+def create_hofers(user_team_players: list[dict]) -> list[str]:
     avg_batting_hof = StatsUtils.get_average_batting_hof_stats(BATTING_HOF_STATS)
     avg_pitching_hof = StatsUtils.get_average_pitching_hof_stats(PITCHING_HOF_STATS)
     hof_class = []
-    user_team = get_user_team(teams)
-    for player in user_team.get_players():
+    for player in user_team_players:
         is_hofer = False
         #if they are already a hofer don't add them again
-        if not player.is_hof():
-            if player.get_position() == PITCHER:
-                all_time_pitching_stats = {} #TODO need to get all time stats from json file 
+        if not player[PYMONGO_PLAYER_IS_HOF]:
+            if player[PYMONGO_PLAYER_POSISTION] == PITCHER:
+                all_time_pitching_stats = player[PYMONGO_PITCHING_STATS_COLLECTION]
                 is_hofer = StatsUtils.is_pitching_hofer(all_time_pitching_stats, avg_pitching_hof)
             else:
-                all_time_batting_stats = {} #TODO need to get all time stats from json file 
+                all_time_batting_stats = player[PYMONGO_BATTING_STATS_COLLECTION] 
                 is_hofer = StatsUtils.is_batting_hofer(all_time_batting_stats, avg_batting_hof)
 
         if is_hofer:
-            hof_class.append(player)
+            hof_class.append(player[PYMONGO_PLAYER_ID])
     return hof_class
 
 def convert_files() -> None:
@@ -268,14 +267,71 @@ def create_season() -> Season:
     return season
 
 
+def check_for_new_year(current_league_data: dict):
+    is_new_year = True
+    seasons = current_league_data.get(PYMONGO_SEASON_COLLECTION, [])
+    for season in seasons:
+        if season[PYMONGO_YEAR] == YEAR:
+            is_new_year = False
+
+    return is_new_year
 
 if __name__ == '__main__':
     #convert_files()
-    season = create_season()
-    season_teams = season.get_teams()
-    season_dict = season.to_dict()
-    with open(SEASONS, 'w') as f:
-        f.write(json.dumps(season_dict))
+    current_league_data = {}
+
+    if(exists(LEAGUE_JSON_PATH)):
+        with open(LEAGUE_JSON_PATH, 'r') as f:
+            current_league_data = json.loads(f.read())
+    is_new_year = check_for_new_year(current_league_data)
+    if is_new_year:
+        season = create_season()
+        season_teams = season.get_teams()
+
+        team_dict = current_league_data.get(PYMONGO_TEAM_COLLECTION, {})
+        player_dict = current_league_data.get(PYMONGO_PLAYER_COLLECTION, {})
+        seasons = current_league_data.get(PYMONGO_SEASON_COLLECTION, [])
+        hofers = current_league_data.get(PYMONGO_HOF_ALL_TIME_COLLECTION, [])
+        current_seasons = current_league_data.get(PYMONGO_SEASON_COLLECTION, [])
+        season_team_to_record = {}
+        season_team_to_players = {}
+        user_team_players = []
+        for team in season_teams:
+            #JSON changes it to a string so we need to 
+            #So we can update it if the team name changes
+            team_id_str = str(team.get_id())
+            team_dict[team_id_str] = team.to_model()
+            player_ids = []
+            for player in team.get_players():
+                player_id = player.get_id()
+                current_player_data = player_dict.get(player_id, {})
+                current_player_batting = current_player_data.get(PYMONGO_BATTING_STATS_COLLECTION, [])
+                current_player_pitching = current_player_data.get(PYMONGO_PITCHING_STATS_COLLECTION, [])
+                updated_player = player.to_dict(season.get_year(), current_player_pitching, current_player_batting)
+                player_dict[player.get_id()] = updated_player
+                player_ids.append(player.get_id())
+                if team.get_is_user_team():
+                    user_team_players.append(updated_player)
+            season_team_to_players[team_id_str] = player_ids
+            season_team_to_record[team_id_str] = team.get_record().to_dict()
+        hof_class = create_hofers(user_team_players)
+        season.set_hof_class(hof_class)
+        season_dict = season.to_dict()
+        hofers.extend(hof_class)
+        season_dict[PYMONGO_TEAM_SEASON_PLAYERS_COLLECTION] = season_team_to_players
+        season_dict[PYMONGO_TEAM_RECORD_COLLECTION] = season_team_to_players
+        current_seasons.append(season_dict)
+        leauge_dict = {
+            PYMONGO_TEAM_COLLECTION: team_dict,
+            PYMONGO_PLAYER_COLLECTION: player_dict,
+            PYMONGO_SEASON_COLLECTION: current_seasons,
+            PYMONGO_HOF_ALL_TIME_COLLECTION: hofers
+
+        }
+        
+        with open(LEAGUE_JSON_PATH, 'w') as f:
+            f.write(json.dumps(leauge_dict))
+    else:
+        print("No new year skipping import")
     print('done')
-    #hofers = create_hofs(season_teams)
     

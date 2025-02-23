@@ -15,7 +15,7 @@ class Season:
         self.regular_season = regular_season
         self.teams = teams
         self.awards = awards
-        self.hof_class: list[Player] = []
+        self.hof_class: list[str] = []
 
     def get_year(self) -> str:
         return self.year 
@@ -44,10 +44,10 @@ class Season:
     def get_awards(self) -> Awards:
         return self.awards
     
-    def set_hof_class(self, players : list[Player]) -> None:
-        self.hof_class = players
+    def set_hof_class(self, player_ids : list[str]) -> None:
+        self.hof_class = player_ids
     
-    def get_hof_class(self) -> list[Player]:
+    def get_hof_class(self) -> list[str]:
         return self.hof_class
     
     def to_model(self, playoffs_id: str, awards_id: str, regular_season_games: list[str]) -> dict[str,]:
@@ -64,9 +64,9 @@ class Season:
             PYMONGO_YEAR: self.year,
             PYMONGO_PLAYOFFS: self.playoffs.to_dict(),
             PYMONGO_REGULAR_SEASON: [game.to_dict() for game in self.regular_season],
-            PYMONGO_TEAMS: [team.to_dict() for team in self.teams],
+            #PYMONGO_TEAMS: [team.to_dict() for team in self.teams],
             PYMONGO_AWARDS: self.awards.to_dict(),
-            PYMONGO_HOF_CLASS_COLLECTION: [player.to_dict() for player in self.hof_class]
+            PYMONGO_HOF_CLASS_COLLECTION: self.hof_class
         }
         
 

@@ -91,8 +91,8 @@ class BattingStats(GeneralStats):
         batting_stats.update(general_stats)
         return batting_stats
     
-    def to_dict(self) -> dict[str,]:
-        general_stats = super().to_dict()
+    def to_dict(self, season_year: int) -> dict[str,]:
+        general_stats = super().to_dict(season_year)
         batting_stats = {
             PYMONGO_STATS_SINGLES: self.singles,
             PYMONGO_STATS_DOUBLES: self.doubles,

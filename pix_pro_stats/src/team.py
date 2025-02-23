@@ -56,7 +56,7 @@ class Team:
 
         return team_model
 
-    def create_team_record_model(self, record_id: str, season_id: str) -> dict[str,]:
+    def create_team_record_model(self, record_id: str, season_id: int) -> dict[str,]:
         team_record_model = {
             PYMONGO_TEAM: self.id,
             PYMONGO_SEASON: season_id,
@@ -64,7 +64,7 @@ class Team:
         }
         return team_record_model
     
-    def create_team_player_season_model(self, player_id: str, season_id: str) -> dict[str,]:
+    def create_team_player_season_model(self, player_id: str, season_id: int) -> dict[str,]:
         team_player_season_model = {
             PYMONGO_PLAYER: player_id,
             PYMONGO_TEAM: self.id,

@@ -109,7 +109,7 @@ MVP_STATS='./current_mlb_stats/mvp_stats.csv'
 BATTING_HOF_STATS='./current_mlb_stats/hof_batting.json'
 PITCHING_HOF_STATS='./current_mlb_stats/hof_pitching.json'
 PYMONGO_CONFIG='./config/password.json'
-SEASONS="./seasons/seasons.json"
+LEAGUE_JSON_PATH="./seasons/league.json"
 
 CSV_WAR='WAR'
 CSV_NAME='Name'
@@ -194,6 +194,7 @@ PYMONGO_AL_DIVISIONAL_TWO='al_divisional_two'
 PYMONGO_NL_CHAMPIONSHIP='nl_championship'
 PYMONGO_AL_CHAMPIONSHIP='al_championship'
 PYMONGO_WORLD_SERIES='world_series'
+PYMONGO_GAME_ID='id'
 PYMONGO_GAMES_WON='games_won'
 PYMONGO_GAMES_PLAYED='games_played'
 PYMONGO_CY_YOUNG='cy_young'
@@ -223,4 +224,5 @@ PYMONGO_SEASON_COLLECTION='seasons'
 PYMONGO_AWARDS_COLLECTION='awards'
 PYMONGO_SEASON_AWARDS_COLLECTION='season_awards'
 PYMONGO_HOF_CLASS_COLLECTION='hof_class'
+PYMONGO_HOF_ALL_TIME_COLLECTION='hofers'
 

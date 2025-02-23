@@ -40,8 +40,8 @@ class PitchingStats(GeneralStats):
         pitching_stats.update(general_stats)
         return pitching_stats
     
-    def to_dict(self) -> dict[str,]:
-        general_stats = super().to_dict()
+    def to_dict(self, season_year: int) -> dict[str,]:
+        general_stats = super().to_dict(season_year)
         pitching_stats =  {
             PYMONGO_STATS_INNINGS_OUTS: self.innings_outs,
             PYMONGO_STATS_PITCHES: self.pitches,

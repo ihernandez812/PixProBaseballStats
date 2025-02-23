@@ -88,8 +88,9 @@ class GeneralStats:
             PYMONGO_STATS_RUNS: self.runs,
         }
     
-    def to_dict(self) -> dict[int, int]:
+    def to_dict(self, season_year: int) -> dict[int, int]:
         return {
+            PYMONGO_SEASON: season_year,
             PYMONGO_STATS_STRIKE_OUTS: self.strike_outs,
             PYMONGO_STATS_AT_BATS: self.at_bats,
             PYMONGO_TEAM: self.team_id,
