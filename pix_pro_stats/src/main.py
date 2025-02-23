@@ -266,6 +266,21 @@ def create_season() -> Season:
     season = Season(YEAR, team_list, regular_season_games, post_season, awards)
     return season
 
+def get_index_by_id(object_list, id, key) -> int:
+    #if we don't find the index then the next slot is the idx
+    idx = -1
+    for i in range(len(object_list) -1):
+        obj = object_list[i]
+        if obj[key] == id:
+            idx = i
+    return idx
+
+def get_team_index(team_list: list, team_id: int) -> int:
+    return get_index_by_id(team_list, team_id, PYMONGO_TEAM_ID)
+    
+def get_player_index(player_list: list, player_id: str) -> int:
+    return get_index_by_id(player_list, player_id, PYMONGO_PLAYER_ID)
+
 
 def check_for_new_year(current_league_data: dict):
     is_new_year = True
@@ -288,8 +303,8 @@ if __name__ == '__main__':
         season = create_season()
         season_teams = season.get_teams()
 
-        team_dict = current_league_data.get(PYMONGO_TEAM_COLLECTION, {})
-        player_dict = current_league_data.get(PYMONGO_PLAYER_COLLECTION, {})
+        team_list = current_league_data.get(PYMONGO_TEAM_COLLECTION, [])
+        player_list = current_league_data.get(PYMONGO_PLAYER_COLLECTION, [])
         seasons = current_league_data.get(PYMONGO_SEASON_COLLECTION, [])
         hofers = current_league_data.get(PYMONGO_HOF_ALL_TIME_COLLECTION, [])
         current_seasons = current_league_data.get(PYMONGO_SEASON_COLLECTION, [])
@@ -300,15 +315,26 @@ if __name__ == '__main__':
             #JSON changes it to a string so we need to 
             #So we can update it if the team name changes
             team_id_str = str(team.get_id())
-            team_dict[team_id_str] = team.to_model()
+            team_idx = get_team_index(team_list, team.get_id())
+            if team_idx != -1:
+                team_list[team_idx] = team.to_model()
+            else:
+                team_list.append(team.to_model())
             player_ids = []
             for player in team.get_players():
                 player_id = player.get_id()
-                current_player_data = player_dict.get(player_id, {})
-                current_player_batting = current_player_data.get(PYMONGO_BATTING_STATS_COLLECTION, [])
-                current_player_pitching = current_player_data.get(PYMONGO_PITCHING_STATS_COLLECTION, [])
-                updated_player = player.to_dict(season.get_year(), current_player_pitching, current_player_batting)
-                player_dict[player.get_id()] = updated_player
+                player_idx = get_player_index(player_list, player.get_id())
+                updated_player = {}
+                if(player_idx != -1):
+                    current_player_data = player_list[player_idx]
+                    current_player_batting = current_player_data.get(PYMONGO_BATTING_STATS_COLLECTION, [])
+                    current_player_pitching = current_player_data.get(PYMONGO_PITCHING_STATS_COLLECTION, [])
+                    updated_player = player.to_dict(season.get_year(), current_player_pitching, current_player_batting)
+                    player_list[player_idx] = updated_player
+                else:
+                    updated_player = player.to_dict(season.get_year(), [], [])
+                    player_list.append(updated_player)
+                
                 player_ids.append(player.get_id())
                 if team.get_is_user_team():
                     user_team_players.append(updated_player)
@@ -322,8 +348,8 @@ if __name__ == '__main__':
         season_dict[PYMONGO_TEAM_RECORD_COLLECTION] = season_team_to_players
         current_seasons.append(season_dict)
         leauge_dict = {
-            PYMONGO_TEAM_COLLECTION: team_dict,
-            PYMONGO_PLAYER_COLLECTION: player_dict,
+            PYMONGO_TEAM_COLLECTION: team_list,
+            PYMONGO_PLAYER_COLLECTION: player_list,
             PYMONGO_SEASON_COLLECTION: current_seasons,
             PYMONGO_HOF_ALL_TIME_COLLECTION: hofers
 
