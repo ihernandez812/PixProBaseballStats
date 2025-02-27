@@ -1,5 +1,7 @@
 from general_stats import GeneralStats
 from constants import *
+
+
 class BattingStats(GeneralStats):
 
     def __init__(self,strike_outs: int=None, at_bats: int=None, singles: int=None, doubles: int=None, triples: int=None, home_runs: int=None, 
