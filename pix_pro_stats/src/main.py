@@ -75,12 +75,12 @@ def create_playoffs(post_season_obj: dict[str,]) -> Playoffs:
         nl_wildcard = create_series(post_season_obj, NL_WILDCARD)
         al_divisional_one = create_series(post_season_obj, AL_DIVISIONAL, 0)
         al_divisional_two = create_series(post_season_obj, AL_DIVISIONAL, 1)
-        nl_divisonal_one = create_series(post_season_obj, NL_DIVISONAL, 0)
-        nl_divisonal_two = create_series(post_season_obj, NL_DIVISONAL, 1)
+        nl_divisional_one = create_series(post_season_obj, NL_DIVISONAL, 0)
+        nl_divisional_two = create_series(post_season_obj, NL_DIVISONAL, 1)
         al_championship = create_series(post_season_obj, AL_CHAMPIONSHIP)
         nl_championship = create_series(post_season_obj, NL_CHAMPIONSHIP)
         world_series = create_series(post_season_obj, WORLD_SERIES)
-        playoffs = Playoffs(al_wildcard, nl_wildcard, al_divisional_one, al_divisional_two, nl_divisonal_one, nl_divisonal_two,
+        playoffs = Playoffs(al_wildcard, nl_wildcard, al_divisional_one, nl_divisional_one, al_divisional_two, nl_divisional_two,
                             al_championship, nl_championship, world_series)
     return playoffs
 
