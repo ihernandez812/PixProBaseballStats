@@ -1,10 +1,13 @@
 from team import Team
 from game import Game
 from constants import *
+import uuid
+from uuid import UUID
 
 class Series:
 
     def __init__(self, team_one: Team, team_two: Team, winner_id: int, games: list[Game], series_length: int) -> None:
+        self.id = uuid.uuid4()
         self.team_one = team_one
         self.team_two = team_two
         self.winner_id = winner_id
@@ -61,6 +64,7 @@ class Series:
         series_length = self.get_series_length()
 
         series_model = {
+            PYMONGO_SERIES_ID: str(self.id),
             PYMONGO_TEAM_ONE: team_one,
             PYMONGO_TEAM_TWO: team_two,
             PYMONGO_WINNER: winner,
