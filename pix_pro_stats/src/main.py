@@ -14,6 +14,7 @@ from series import Series
 from season import Season
 from playoffs import Playoffs
 from awards import Awards
+from division import Division
 import json
 
 teams = {}
@@ -291,13 +292,32 @@ def check_for_new_year(current_league_data: dict):
 
     return is_new_year
 
+def create_divisions() -> list[Division]:
+    divisions_file_path = PLAIN_TXT_FILES_PATH + DIVISIONS_DATA_FILE
+    divisions_data = FileUtils.read_json_file(divisions_file_path)
+    leagues_data = divisions_data[LEAGUES]
+    division_list = []
+    for league_data in leagues_data:
+        if league_data[LEAGUE_NAME] == MAJOR_LEAGUE_NAME:
+            conferences = league_data[CONFERENCES]
+            for conference in conferences:
+                conference_name = conference[LEAGUE_NAME]
+                divisions = conference[DIVISIONS]
+                for division_data in divisions:
+                    division_name = division_data[DIVISIONS_NAME]
+                    teams = division_data[DIVISIONS_TEAMS]
+                    division = Division(division_name, teams, conference_name)
+                    division_list.append(division)
+    return division_list
+
+
+
 if __name__ == '__main__':
     #convert_files()
     current_league_data = {}
 
     if(exists(LEAGUE_JSON_PATH)):
-        with open(LEAGUE_JSON_PATH, 'r') as f:
-            current_league_data = json.loads(f.read())
+        current_league_data = FileUtils.read_json_file(LEAGUE_JSON_PATH)
     is_new_year = check_for_new_year(current_league_data)
     if is_new_year:
         season = create_season()
@@ -340,6 +360,7 @@ if __name__ == '__main__':
                     user_team_players.append(updated_player)
             season_team_to_players[team_id_str] = player_ids
             season_team_to_record[team_id_str] = team.get_record().to_dict()
+        divisions = create_divisions()
         hof_class = create_hofers(user_team_players)
         season.set_hof_class(hof_class)
         season_dict = season.to_dict()
@@ -348,10 +369,12 @@ if __name__ == '__main__':
         season_dict[PYMONGO_TEAM_RECORD_COLLECTION] = season_team_to_record
         current_seasons.append(season_dict)
         leauge_dict = {
+            PYMONGO_DIVISIONS: [division.to_dict() for division in divisions],
             PYMONGO_TEAM_COLLECTION: team_list,
             PYMONGO_PLAYER_COLLECTION: player_list,
             PYMONGO_SEASON_COLLECTION: current_seasons,
-            PYMONGO_HOF_ALL_TIME_COLLECTION: hofers
+            PYMONGO_HOF_ALL_TIME_COLLECTION: hofers,
+            
 
         }
         

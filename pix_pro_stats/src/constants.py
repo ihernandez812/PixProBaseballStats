@@ -23,6 +23,13 @@ PLAYER_PITCHING_TYPE='pitcherType'
 LEFT_HANDED=-1
 RIGHT_HANDED=1
 
+MAJOR_LEAGUE_NAME='Major League'
+LEAGUE_NAME='name'
+CONFERENCES='conferences'
+LEAGUES='leagues'
+DIVISIONS='divisions'
+DIVISIONS_NAME='name'
+DIVISIONS_TEAMS='teamIdInts'
 YEAR=2023
 MAJOR_LEAGUE=0
 LEAGUE_TYPE='l'
@@ -110,6 +117,7 @@ BATTING_HOF_STATS='./current_mlb_stats/hof_batting.json'
 PITCHING_HOF_STATS='./current_mlb_stats/hof_pitching.json'
 PYMONGO_CONFIG='./config/password.json'
 LEAGUE_JSON_PATH="./seasons/league.json"
+DIVISIONS_DATA_FILE='/AllLeaguesData.json'
 
 CSV_WAR='WAR'
 CSV_NAME='Name'
@@ -227,4 +235,10 @@ PYMONGO_AWARDS_COLLECTION='awards'
 PYMONGO_SEASON_AWARDS_COLLECTION='season_awards'
 PYMONGO_HOF_CLASS_COLLECTION='hof_class'
 PYMONGO_HOF_ALL_TIME_COLLECTION='hofers'
+
+PYMONGO_DIVISIONS='divisions'
+PYMONGO_DIVISION_ID='id'
+PYMONGO_DIVISION_NAME='name'
+PYMONGO_DIVISION_TEAMS='teams'
+PYMONGO_DIVISION_CONFERENCE='conference'
 
