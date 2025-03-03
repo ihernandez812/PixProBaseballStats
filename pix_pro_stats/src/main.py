@@ -45,6 +45,7 @@ def create_post_season_game(post_season_game_obj: dict[str,]) -> Game:
     return game
 
 def create_series(post_season_obj: dict, key: str, series_type: str=None) -> Series:
+    series_name = key
     if series_type is not None:
         key = key.format(series=series_type)
     series_obj = post_season_obj.get(key, {})
@@ -60,7 +61,7 @@ def create_series(post_season_obj: dict, key: str, series_type: str=None) -> Ser
         new_game = create_post_season_game(game)
         series_games.append(new_game)
     
-    series = Series(team_one, team_two, winner_id, series_games, series_length)
+    series = Series(team_one, team_two, winner_id, series_games, series_length, series_name)
     return series
 
 def check_is_mlb_post_season(post_season_obj: dict[str,]) -> bool:
