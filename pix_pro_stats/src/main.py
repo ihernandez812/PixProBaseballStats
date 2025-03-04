@@ -27,8 +27,8 @@ def create_game(game_obj: dict[str,]) -> Game:
         team_one = teams.get(team_one_id)
         team_two_id = game_obj.get(TEAM_TWO_ID)
         team_two = teams.get(team_two_id)
-        team_one_score = game_obj.get(TEAM_ONE_SCORE, 0)
-        team_two_score = game_obj.get(TEAM_TWO_SCORE, 0)
+        team_one_score = game_obj.get(TEAM_ONE_SCORE, -1)
+        team_two_score = game_obj.get(TEAM_TWO_SCORE, -1)
         game = Game(team_one, team_one_score, team_two, team_two_score)
     return game
 
