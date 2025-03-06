@@ -224,6 +224,8 @@ def get_user_team(teams: list[Team]) -> Team:
 def create_awards(teams: list[Team]) -> Awards:
     cy_young_winner = None
     mvp_winner = None
+    batting_title = None
+    home_run_leader = None
     avg_cy_young_winner = StatsUtils.calculate_average_cy_young_stats(CY_YOUNG_STATS)
     avg_mvp_winner = StatsUtils.calculate_average_mvp_stats(MVP_STATS)
     user_team = get_user_team(teams)
@@ -232,7 +234,10 @@ def create_awards(teams: list[Team]) -> Awards:
             cy_young_winner = StatsUtils.get_cy_young_winner(player, cy_young_winner)
         if StatsUtils.is_mvp_canidate(player, avg_mvp_winner):
             mvp_winner = StatsUtils.get_mvp_winner(player, mvp_winner)
-    awards = Awards(cy_young_winner, mvp_winner)
+        if player.get_position() != PITCHER:
+            batting_title = StatsUtils.get_batting_title_winner(player, batting_title)
+            home_run_leader = StatsUtils.get_home_run_leader_winner(player, home_run_leader)
+    awards = Awards(cy_young_winner, mvp_winner, batting_title, home_run_leader)
     return awards
 
 def create_hofers(user_team_players: list[dict]) -> list[str]:
