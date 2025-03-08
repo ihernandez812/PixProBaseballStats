@@ -15,3 +15,5 @@ pix_pro_stats/src/current_mlb_stats/*
 
 pix_pro_stats/src/config/
 pix_pro_stats/src/config/*
+
+pix_pro_stats/src/seasons/leagueHold.json

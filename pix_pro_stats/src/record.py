@@ -27,3 +27,13 @@ class Record:
             PYMONGO_GAMES_PLAYED: games_played
         }
         return record_model
+    
+    def to_dict(self) -> dict[str, int]:
+        games_won = self.get_games_won()
+        games_played = self.get_games_played()
+
+        record_model = {
+            PYMONGO_GAMES_WON: games_won,
+            PYMONGO_GAMES_PLAYED: games_played
+        }
+        return record_model

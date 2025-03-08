@@ -1,8 +1,10 @@
 from constants import *
+import uuid
 
 class GeneralStats:
 
     def __init__(self, strike_outs: int, at_bats: int, walks: int, home_runs: int, num_games: int, strikes: int, hits: int, balls: int, runs: int, team_id: int):
+        self.id = uuid.uuid4()
         self.strike_outs = strike_outs
         self.at_bats = at_bats
         self.walks = walks
@@ -76,6 +78,22 @@ class GeneralStats:
     
     def to_model(self) -> dict[int, int]:
         return {
+            PYMONGO_STATS_STRIKE_OUTS: self.strike_outs,
+            PYMONGO_STATS_AT_BATS: self.at_bats,
+            PYMONGO_TEAM: self.team_id,
+            PYMONGO_STATS_HOME_RUNS: self.home_runs,
+            PYMONGO_STATS_WALKS: self.walks,
+            PYMONGO_STATS_NUMBER_OF_GAMES: self.num_games,
+            PYMONGO_STATS_STRIKES: self.strikes,
+            PYMONGO_STATS_HITS: self.hits,
+            PYMONGO_STATS_BALLS: self.balls,
+            PYMONGO_STATS_RUNS: self.runs,
+        }
+    
+    def to_dict(self, season_year: int) -> dict[int, int]:
+        return {
+            PYMONGO_STATS_ID: str(self.id),
+            PYMONGO_SEASON: season_year,
             PYMONGO_STATS_STRIKE_OUTS: self.strike_outs,
             PYMONGO_STATS_AT_BATS: self.at_bats,
             PYMONGO_TEAM: self.team_id,

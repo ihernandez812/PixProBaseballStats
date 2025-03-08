@@ -373,6 +373,30 @@ class StatsUtils:
         return curr_winner
     
     @staticmethod
+    def get_batting_title_winner(player: Player, curr_winner: Player) -> Player:
+        if curr_winner is None:
+            curr_winner = player
+        else: 
+            player_batting_avg = StatsUtils.calculate_average(player.get_season_batting())
+            curr_winner_avg = StatsUtils.calculate_average(curr_winner.get_season_batting())
+            if player_batting_avg > curr_winner_avg:
+                curr_winner = player
+        return curr_winner
+    
+    @staticmethod
+    def get_home_run_leader_winner(player: Player, curr_winner: Player) -> Player:
+        if curr_winner is None:
+            curr_winner = player
+        else:
+            player_home_runs = player.get_season_batting().get_home_runs()
+            curr_winner_home_runs = curr_winner.get_season_batting().get_home_runs()
+
+            if player_home_runs > curr_winner_home_runs:
+                curr_winner = player
+        return curr_winner
+
+    
+    @staticmethod
     def calculate_mvp_points(player_batting: BattingStats, stats: dict) -> int:
         points = 0
         batting_average = StatsUtils.calculate_average(player_batting)
