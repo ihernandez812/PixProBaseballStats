@@ -319,13 +319,13 @@ def create_divisions() -> list[Division]:
 
 
 if __name__ == '__main__':
-    #convert_files()
+    convert_files()
     current_league_data = {}
 
     if(exists(LEAGUE_JSON_PATH)):
         current_league_data = FileUtils.read_json_file(LEAGUE_JSON_PATH)
     is_new_year = check_for_new_year(current_league_data)
-    if is_new_year:
+    if is_new_year and False:
         season = create_season()
         season_teams = season.get_teams()
 
