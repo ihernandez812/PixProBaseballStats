@@ -3,10 +3,11 @@ from batting_stats import BattingStats
 from constants import *
 class Player:
 
-    def __init__(self, id: str, name: str, handedness: int, position: int, pitcher_type: int, designated_hitter: bool, season_batting: BattingStats,
+    def __init__(self, id: str, name: str, age: int, handedness: int, position: int, pitcher_type: int, designated_hitter: bool, season_batting: BattingStats,
                  team_batting: BattingStats, season_pitching: PitchingStats, team_pitching: PitchingStats, is_hof: bool):
         self.id = id
         self.name = name
+        self.age = age
         self.handedness = handedness
         self.position = position
         self.pitcher_type = pitcher_type
@@ -28,6 +29,12 @@ class Player:
 
     def set_name(self, value: str):
         self.name = value
+
+    def get_age(self) -> int:
+        return self.age
+    
+    def set_age(self, age: int):
+        self.age = age
 
     def get_handedness(self) -> int:
         return self.handedness
@@ -145,3 +152,5 @@ class Player:
             PYMONGO_YEAR: YEAR 
         }
         return hof_class_model
+    
+    
