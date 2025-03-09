@@ -1,7 +1,8 @@
 from pitching_stats import PitchingStats
 from general_stats import GeneralStats
 from batting_stats import BattingStats
-from player import Player
+from player import Player, PlayerType
+from awards import Awards
 from pymongo_utils import PyMongoUtils
 from file_utils import FileUtils
 import pandas as pd
@@ -12,21 +13,21 @@ class StatsUtils:
     @staticmethod
     def calculate_pitching_hof_points(pitching_stats: PitchingStats, hof_pitching_stats: dict[str,], years_played: int) -> int:
         points = 0
-        if years_played >= hof_pitching_stats[CSV_YEARS_PLAYED]:
+        if years_played >= hof_pitching_stats[BaseballReference.CSV_YEARS_PLAYED]:
             points+=1
-        if StatsUtils.calculate_era(pitching_stats) <= hof_pitching_stats[CSV_ERA]:
+        if StatsUtils.calculate_era(pitching_stats) <= hof_pitching_stats[BaseballReference.CSV_ERA]:
             points+=1
-        if pitching_stats.get_num_games() >= hof_pitching_stats[CSV_NUM_GAMES]:
+        if pitching_stats.get_num_games() >= hof_pitching_stats[BaseballReference.CSV_NUM_GAMES]:
             points+=1
-        if (pitching_stats.get_innings_outs() / 3) >= hof_pitching_stats[CSV_INNINGS_PITCHED]:
+        if (pitching_stats.get_innings_outs() / 3) >= hof_pitching_stats[BaseballReference.CSV_INNINGS_PITCHED]:
             points+=1
-        if pitching_stats.get_hits() <= hof_pitching_stats[CSV_HITS]:
+        if pitching_stats.get_hits() <= hof_pitching_stats[BaseballReference.CSV_HITS]:
             points+=1
-        if pitching_stats.get_home_runs() <= hof_pitching_stats[CSV_HOME_RUNS]:
+        if pitching_stats.get_home_runs() <= hof_pitching_stats[BaseballReference.CSV_HOME_RUNS]:
             points+=1
-        if pitching_stats.get_walks() <= hof_pitching_stats[CSV_WALKS]:
+        if pitching_stats.get_walks() <= hof_pitching_stats[BaseballReference.CSV_WALKS]:
             points+=1
-        if pitching_stats.get_strike_outs() >= hof_pitching_stats[CSV_STRIKE_OUTS]:
+        if pitching_stats.get_strike_outs() >= hof_pitching_stats[BaseballReference.CSV_STRIKE_OUTS]:
             points+=1
         return points
 
@@ -41,13 +42,13 @@ class StatsUtils:
         walks = 0
         strike_outs = 0
         for player_pitching in all_player_pitching:
-            num_games += player_pitching[PYMONGO_STATS_NUMBER_OF_GAMES]
-            innings_outs += player_pitching[PYMONGO_STATS_INNINGS_OUTS]
-            earned_runs += player_pitching[PYMONGO_STATS_RUNS]
-            hits += player_pitching[PYMONGO_STATS_HITS]
-            home_runs += player_pitching[PYMONGO_STATS_HOME_RUNS]
-            walks += player_pitching[PYMONGO_STATS_WALKS]
-            strike_outs += player_pitching[PYMONGO_STATS_STRIKE_OUTS]
+            num_games += player_pitching[PitchingStats.NUMBER_OF_GAMES]
+            innings_outs += player_pitching[PitchingStats.INNINGS_OUTS]
+            earned_runs += player_pitching[PitchingStats.RUNS]
+            hits += player_pitching[PitchingStats.HITS]
+            home_runs += player_pitching[PitchingStats.HOME_RUNS]
+            walks += player_pitching[PitchingStats.WALKS]
+            strike_outs += player_pitching[PitchingStats.STRIKE_OUTS]
         
         pitching_stats =  PitchingStats(num_games=num_games, innings_outs=innings_outs, earned_runs=earned_runs,
                                         hits=hits, home_runs=home_runs, walks=walks, strike_outs=strike_outs)
@@ -57,7 +58,7 @@ class StatsUtils:
     def is_pitching_hofer(all_player_pitching: list[dict[str,]], pitching_hof_stats: dict[str,]) -> bool:
         player_all_time_pitching = StatsUtils.calculate_all_time_player_pitching(all_player_pitching)
         points = StatsUtils.calculate_pitching_hof_points(player_all_time_pitching, pitching_hof_stats, len(all_player_pitching))
-        return points >= PITCHING_HOF_MIN
+        return points >= HallOfFame.PITCHING_HOF_MIN
     
     @staticmethod
     def get_average_pitching_hof_stats(hof_pitching_stats_path: str) -> dict:
@@ -81,21 +82,21 @@ class StatsUtils:
         sacrifice_flys = 0
         hits_by_pitch = 0
         for player_batting in all_player_batting:
-            num_games += player_batting[PYMONGO_STATS_NUMBER_OF_GAMES]
-            plate_apperances += player_batting[PYMONGO_STATS_PLATE_APPERANCES]
-            at_bats += player_batting[PYMONGO_STATS_AT_BATS]
-            runs += player_batting[PYMONGO_STATS_RUNS]
-            hits += player_batting[PYMONGO_STATS_HITS]
-            singles += player_batting[PYMONGO_STATS_SINGLES]
-            doubles += player_batting[PYMONGO_STATS_DOUBLES]
-            triples += player_batting[PYMONGO_STATS_TRIPLES]
-            home_runs += player_batting[PYMONGO_STATS_HOME_RUNS]
-            rbis += player_batting[PYMONGO_STATS_RBIS]
-            stolen_bases += player_batting[PYMONGO_STATS_STOLEN_BASES]
-            walks += player_batting[PYMONGO_STATS_WALKS]
-            strike_outs += player_batting[PYMONGO_STATS_STRIKE_OUTS]
-            sacrifice_flys += player_batting[PYMONGO_STATS_SACRIFICE_FLYS]
-            hits_by_pitch += player_batting[PYMONGO_STATS_HIT_BY_PITCH]
+            num_games += player_batting[BattingStats.NUMBER_OF_GAMES]
+            plate_apperances += player_batting[BattingStats.PLATE_APPERANCES]
+            at_bats += player_batting[BattingStats.AT_BATS]
+            runs += player_batting[BattingStats.RUNS]
+            hits += player_batting[BattingStats.HITS]
+            singles += player_batting[BattingStats.SINGLES]
+            doubles += player_batting[BattingStats.DOUBLES]
+            triples += player_batting[BattingStats.TRIPLES]
+            home_runs += player_batting[BattingStats.HOME_RUNS]
+            rbis += player_batting[BattingStats.RBIS]
+            stolen_bases += player_batting[BattingStats.STOLEN_BASES]
+            walks += player_batting[BattingStats.WALKS]
+            strike_outs += player_batting[BattingStats.STRIKE_OUTS]
+            sacrifice_flys += player_batting[BattingStats.SACRIFICE_FLYS]
+            hits_by_pitch += player_batting[BattingStats.HIT_BY_PITCH]
         batting_stats = BattingStats(num_games=num_games, plate_apperances=plate_apperances, at_bats=at_bats,
                                     runs=runs, hits=hits, singles=singles, doubles=doubles, triples=triples,
                                     home_runs=home_runs, rbis=rbis, stolen_bases=stolen_bases, walks=walks,
@@ -106,37 +107,37 @@ class StatsUtils:
     @staticmethod
     def calculate_batting_hof_points(batting_stats: BattingStats, hof_batting_stats: dict[str,], years_played: int) -> int:
         points = 0
-        if years_played >= hof_batting_stats[CSV_YEARS_PLAYED]:
+        if years_played >= hof_batting_stats[BaseballReference.CSV_YEARS_PLAYED]:
             points+=1
-        if batting_stats.get_num_games() >= hof_batting_stats[CSV_NUM_GAMES]:
+        if batting_stats.get_num_games() >= hof_batting_stats[BaseballReference.CSV_NUM_GAMES]:
             points+=1
-        if batting_stats.get_plate_apperances() >= hof_batting_stats[CSV_PLATE_APPERANCES]:
+        if batting_stats.get_plate_apperances() >= hof_batting_stats[BaseballReference.CSV_PLATE_APPERANCES]:
             points+=1
-        if batting_stats.get_at_bats() >= hof_batting_stats[CSV_AT_BATS]:
+        if batting_stats.get_at_bats() >= hof_batting_stats[BaseballReference.CSV_AT_BATS]:
             points+=1
-        if batting_stats.get_runs() >= hof_batting_stats[CSV_RUNS]:
+        if batting_stats.get_runs() >= hof_batting_stats[BaseballReference.CSV_RUNS]:
             points+=1
-        if batting_stats.get_hits() >= hof_batting_stats[CSV_HITS]:
+        if batting_stats.get_hits() >= hof_batting_stats[BaseballReference.CSV_HITS]:
             points+=1
-        if batting_stats.get_doubles() >= hof_batting_stats[CSV_DOUBLES]:
+        if batting_stats.get_doubles() >= hof_batting_stats[BaseballReference.CSV_DOUBLES]:
             points+=1
-        if batting_stats.get_triples() >= hof_batting_stats[CSV_TRIPLES]:
+        if batting_stats.get_triples() >= hof_batting_stats[BaseballReference.CSV_TRIPLES]:
             points+=1
-        if batting_stats.get_home_runs() >= hof_batting_stats[CSV_HOME_RUNS]:
+        if batting_stats.get_home_runs() >= hof_batting_stats[BaseballReference.CSV_HOME_RUNS]:
             points+=1
-        if batting_stats.get_rbis() >= hof_batting_stats[CSV_RBIS]:
+        if batting_stats.get_rbis() >= hof_batting_stats[BaseballReference.CSV_RBIS]:
             points+=1
-        if batting_stats.get_stolen_bases() >= hof_batting_stats[CSV_STOLEN_BASES]:
+        if batting_stats.get_stolen_bases() >= hof_batting_stats[BaseballReference.CSV_STOLEN_BASES]:
             points+=1
-        if batting_stats.get_sacrifice_flys() >= hof_batting_stats[CSV_SACRIFICE_FLYS]:
+        if batting_stats.get_sacrifice_flys() >= hof_batting_stats[BaseballReference.CSV_SACRIFICE_FLYS]:
             points+=1
-        if StatsUtils.calculate_average(batting_stats) >= hof_batting_stats[CSV_BATTING_AVERAGE]:
+        if StatsUtils.calculate_average(batting_stats) >= hof_batting_stats[BaseballReference.CSV_BATTING_AVERAGE]:
             points+=1
-        if StatsUtils.calculate_obp(batting_stats) >= hof_batting_stats[CSV_OBP]:
+        if StatsUtils.calculate_obp(batting_stats) >= hof_batting_stats[BaseballReference.CSV_OBP]:
             points+=1
-        if StatsUtils.calculate_slug(batting_stats) >= hof_batting_stats[CSV_SLUG]:
+        if StatsUtils.calculate_slug(batting_stats) >= hof_batting_stats[BaseballReference.CSV_SLUG]:
             points+=1
-        if StatsUtils.calculate_ops(batting_stats) >= hof_batting_stats[CSV_OPS]:
+        if StatsUtils.calculate_ops(batting_stats) >= hof_batting_stats[BaseballReference.CSV_OPS]:
             points+=1
         return points
 
@@ -144,7 +145,7 @@ class StatsUtils:
     def is_batting_hofer(all_player_batting: list[dict[str,]], batting_hof_stats: dict[str,]) -> bool:
         player_all_time_batting = StatsUtils.calculate_all_time_player_batting(all_player_batting)
         points = StatsUtils.calculate_batting_hof_points(player_all_time_batting, batting_hof_stats, len(all_player_batting))
-        return points >= BATTING_HOF_MIN
+        return points >= HallOfFame.BATTING_HOF_MIN
 
     @staticmethod
     def get_average_batting_hof_stats(hof_batting_stats_path: str) -> dict:
@@ -153,7 +154,7 @@ class StatsUtils:
     @staticmethod
     def is_hofer(player: Player, avg_pitching_hofer: dict[str,], avg_batting_hofer: dict[str,]) -> bool:
         is_canidate = False
-        if player.get_position() == PITCHER:
+        if player.get_position() == PlayerType.PITCHER.value:
             all_player_pitching = PyMongoUtils.get_all_player_pitching(player.get_id())
             is_canidate = StatsUtils.is_pitching_hofer(all_player_pitching, avg_pitching_hofer)
         else:
@@ -164,29 +165,29 @@ class StatsUtils:
     @staticmethod
     def calculate_average_cy_young_stats(cy_young_csv: str) -> dict[str, float]:
         cy_young_all_time_stats = pd.read_csv(cy_young_csv, keep_default_na=False)
-        cy_young_all_time_stats.fillna(EMPTY_STRING)
+        cy_young_all_time_stats.fillna(BaseballReference.EMPTY_STRING)
         row_count = 0
         era = 0 
         strike_outs_per_inning = 0
         for _, cy_young_stats in cy_young_all_time_stats.iterrows():
-            if cy_young_stats[CSV_NAME] != EMPTY_STRING:
-                era += float(cy_young_stats[CSV_ERA])
-                innings_pitched = float(cy_young_stats[CSV_INNINGS_PITCHED])
-                strike_outs = float(cy_young_stats[CSV_STRIKE_OUTS])
+            if cy_young_stats[BaseballReference.CSV_NAME] != BaseballReference.EMPTY_STRING:
+                era += float(cy_young_stats[BaseballReference.CSV_ERA])
+                innings_pitched = float(cy_young_stats[BaseballReference.CSV_INNINGS_PITCHED])
+                strike_outs = float(cy_young_stats[BaseballReference.CSV_STRIKE_OUTS])
                 strike_outs_per_inning += (strike_outs / innings_pitched)
                 row_count+=1
         era /= row_count
         strike_outs_per_inning /= row_count
         return {
-            CSV_ERA: round(era, 3), 
-            CSV_STRIKE_OUTS: round(strike_outs_per_inning, 3)
+            BaseballReference.CSV_ERA: round(era, 3), 
+            BaseballReference.CSV_STRIKE_OUTS: round(strike_outs_per_inning, 3)
         }
     
 
     @staticmethod
     def calculate_average_mvp_stats(mvp_csv: str) -> dict[str, float]:
         mvp_all_time_stats = pd.read_csv(mvp_csv, keep_default_na=False)
-        mvp_all_time_stats.fillna(EMPTY_STRING)
+        mvp_all_time_stats.fillna(BaseballReference.EMPTY_STRING)
         row_count = 0 
         batting_avg = 0
         obp = 0
@@ -195,13 +196,13 @@ class StatsUtils:
         rbis = 0
         stolen_bases = 0
         for _, mvp_stats in mvp_all_time_stats.iterrows():
-            if mvp_stats[CSV_BATTING_AVERAGE] != EMPTY_STRING:
-                batting_avg += float(mvp_stats[CSV_BATTING_AVERAGE])
-                obp += float(mvp_stats[CSV_OBP])
-                slug += float(mvp_stats[CSV_SLUG])
-                home_runs += float(mvp_stats[CSV_HOME_RUNS])
-                rbis += float(mvp_stats[CSV_RBIS])
-                stolen_bases += float(mvp_stats[CSV_STOLEN_BASES])
+            if mvp_stats[BaseballReference.CSV_BATTING_AVERAGE] != BaseballReference.EMPTY_STRING:
+                batting_avg += float(mvp_stats[BaseballReference.CSV_BATTING_AVERAGE])
+                obp += float(mvp_stats[BaseballReference.CSV_OBP])
+                slug += float(mvp_stats[BaseballReference.CSV_SLUG])
+                home_runs += float(mvp_stats[BaseballReference.CSV_HOME_RUNS])
+                rbis += float(mvp_stats[BaseballReference.CSV_RBIS])
+                stolen_bases += float(mvp_stats[BaseballReference.CSV_STOLEN_BASES])
                 row_count+=1
         batting_avg /= row_count
         obp /= row_count
@@ -211,12 +212,12 @@ class StatsUtils:
         stolen_bases /= stolen_bases
 
         return {
-            CSV_BATTING_AVERAGE: round(batting_avg, 3),
-            CSV_OBP: round(obp, 3),
-            CSV_SLUG: round(slug, 3),
-            CSV_HOME_RUNS: round(home_runs, 3),
-            CSV_RBIS: round(rbis, 3),
-            CSV_STOLEN_BASES: round(stolen_bases, 3)
+            BaseballReference.CSV_BATTING_AVERAGE: round(batting_avg, 3),
+            BaseballReference.CSV_OBP: round(obp, 3),
+            BaseballReference.CSV_SLUG: round(slug, 3),
+            BaseballReference.CSV_HOME_RUNS: round(home_runs, 3),
+            BaseballReference.CSV_RBIS: round(rbis, 3),
+            BaseballReference.CSV_STOLEN_BASES: round(stolen_bases, 3)
         }
     
     @staticmethod
@@ -273,21 +274,21 @@ class StatsUtils:
         era = StatsUtils.calculate_era(player_pitching)
         strikes_per_inning = StatsUtils.calculate_strikes_outs_per_inning(player_pitching)
         num_games = player_pitching.get_num_games()
-        if era <= stats[CSV_ERA]:
+        if era <= stats[BaseballReference.CSV_ERA]:
             points += 1
-        if strikes_per_inning >= stats[CSV_STRIKE_OUTS]:
+        if strikes_per_inning >= stats[BaseballReference.CSV_STRIKE_OUTS]:
             points += 1
-        if num_games >= MIN_GAMES:
+        if num_games >= Awards.MIN_GAMES:
             points+=.5
         return points
 
     @staticmethod
     def is_cy_young_canidate(player: Player, stats: dict) -> bool:
         is_canidate = False
-        if player.get_position() == PITCHER:
+        if player.get_position() == PlayerType.PITCHER.value:
             player_pitching = player.get_season_pitching()
             points = StatsUtils.calculate_cy_young_points(player_pitching, stats)
-            if points >= CY_YOUNG_MIN:
+            if points >= Awards.CY_YOUNG_MIN:
                 is_canidate = True
         return is_canidate
 
@@ -406,19 +407,19 @@ class StatsUtils:
         rbis = player_batting.get_rbis()
         stolen_bases = player_batting.get_stolen_bases()
         num_games = player_batting.get_num_games()
-        if batting_average >= stats[CSV_BATTING_AVERAGE]:
+        if batting_average >= stats[BaseballReference.CSV_BATTING_AVERAGE]:
             points+=1
-        if obp >= stats[CSV_OBP]:
+        if obp >= stats[BaseballReference.CSV_OBP]:
             points+=1
-        if slug >= stats[CSV_SLUG]:
+        if slug >= stats[BaseballReference.CSV_SLUG]:
             points+=1
-        if home_runs >= stats[CSV_HOME_RUNS] or abs(home_runs - stats[CSV_HOME_RUNS]) <= 10:
+        if home_runs >= stats[BaseballReference.CSV_HOME_RUNS] or abs(home_runs - stats[BaseballReference.CSV_HOME_RUNS]) <= 10:
             points+=1
-        if rbis >= stats[CSV_RBIS] or abs(rbis - stats[CSV_RBIS]) <= 25:
+        if rbis >= stats[BaseballReference.CSV_RBIS] or abs(rbis - stats[BaseballReference.CSV_RBIS]) <= 25:
             points+=1
-        if stolen_bases >= stats[CSV_STOLEN_BASES]:
+        if stolen_bases >= stats[BaseballReference.CSV_STOLEN_BASES]:
             points+=1
-        if num_games >= MIN_GAMES:
+        if num_games >= Awards.MIN_GAMES:
             points+=.5
         
         return points
@@ -426,10 +427,10 @@ class StatsUtils:
     @staticmethod
     def is_mvp_canidate(player: Player, stats: dict[str,]) -> Player:
         is_canidate = False
-        if player.get_position() != PITCHER:
+        if player.get_position() != PlayerType.PITCHER.value:
             player_batting = player.get_season_batting()
             points = StatsUtils.calculate_mvp_points(player_batting, stats)
-            if points >= MVP_MIN:
+            if points >= Awards.MVP_MIN:
                 is_canidate = True
         return is_canidate
 

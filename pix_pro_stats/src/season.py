@@ -8,7 +8,13 @@ import json
 
 
 class Season:
-    
+    TEAM_PLAYERS='teamSeasonPlayers'
+    TEAM_RECORD='teamRecords'
+    PLAYOFFS='playoffs'
+    AWARDS='awards'
+    HOF_CLASS='hofClass'
+    REGULAR_SEASON='regularSeason'
+
     def __init__(self, year: str, teams: list[Team], regular_season: list[Game], playoffs: Playoffs, awards: Awards) -> None:
         self.year = year
         self.playoffs = playoffs
@@ -50,23 +56,24 @@ class Season:
     def get_hof_class(self) -> list[str]:
         return self.hof_class
     
+    @DeprecationWarning
     def to_model(self, playoffs_id: str, awards_id: str, regular_season_games: list[str]) -> dict[str,]:
         season_model = {
-            PYMONGO_YEAR: self.year,
-            PYMONGO_PLAYOFFS: playoffs_id,
-            PYMONGO_AWARDS: awards_id,
-            PYMONGO_REGULAR_SEASON: regular_season_games,
+            League.YEAR: self.year,
+            self.PLAYOFFS: playoffs_id,
+            self.AWARDS: awards_id,
+            self.REGULAR_SEASON: regular_season_games,
         }
         return season_model
     
     def to_dict(self) -> dict[str,]:
         return {
-            PYMONGO_YEAR: self.year,
-            PYMONGO_PLAYOFFS: self.playoffs.to_dict(),
-            PYMONGO_REGULAR_SEASON: [game.to_dict() for game in self.regular_season],
+            League.YEAR: self.year,
+            self.PLAYOFFS: self.playoffs.to_dict(),
+            self.REGULAR_SEASON: [game.to_dict() for game in self.regular_season],
             #PYMONGO_TEAMS: [team.to_dict() for team in self.teams],
-            PYMONGO_AWARDS: self.awards.to_dict(),
-            PYMONGO_HOF_CLASS_COLLECTION: self.hof_class
+            self.AWARDS: self.awards.to_dict(),
+            self.HOF_CLASS: self.hof_class
         }
         
 
@@ -76,9 +83,10 @@ class Season:
             sort_keys=True,
             indent=4)
 
+    @DeprecationWarning
     def create_season_awards_model(self, season_id: str, awards_id: str) -> dict[str, str]:
         season_awards = {
-            PYMONGO_SEASON: season_id,
-            PYMONGO_AWARDS: awards_id
+            League.SEASON: season_id,
+            self.AWARDS: awards_id
         }
         return season_awards

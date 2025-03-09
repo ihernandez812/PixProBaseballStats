@@ -3,6 +3,16 @@ from player import Player
 from constants import *
 
 class Team:
+    ID='id'
+    SEASON='season'
+    GAMES_PLAYED='gamesPlayed'
+    GAMES_WON='gamesWon'
+    IS_USER_TEAM='isUserTeam'
+    PLAYERS='players'
+    NAMES='names'
+    NAME='name'
+    RECORD='record'
+    NO_ID=-1
 
     def __init__(self, id: int, name: str) -> None:
         self.id = id
@@ -10,8 +20,6 @@ class Team:
         self.is_user_team = False
         self.record = None
         self.players:  list[Player] = []
-
-
 
     def get_id(self) -> int:
         return self.id
@@ -43,32 +51,35 @@ class Team:
     def add_player(self, value: Player):
         self.players.append(value)
     
+    @DeprecationWarning
     def to_model(self) -> dict[str,]:
         team_name = self.name
         team_id = self.id 
         is_user_team = self.is_user_team
 
         team_model = {
-            PYMONGO_TEAM_NAME: team_name,
-            PYMONGO_TEAM_ID: team_id,
-            PYMONGO_TEAM_IS_USER_TEAM: is_user_team
+            self.NAME: team_name,
+            self.ID: team_id,
+            self.IS_USER_TEAM: is_user_team
         }
 
         return team_model
 
+    @DeprecationWarning
     def create_team_record_model(self, record_id: str, season_id: int) -> dict[str,]:
         team_record_model = {
-            PYMONGO_TEAM: self.id,
-            PYMONGO_SEASON: season_id,
-            PYMONGO_RECORD: record_id
+            League.TEAM: self.id,
+            League.SEASON: season_id,
+            self.RECORD: record_id
         }
         return team_record_model
     
+    @DeprecationWarning
     def create_team_player_season_model(self, player_id: str, season_id: int) -> dict[str,]:
         team_player_season_model = {
-            PYMONGO_PLAYER: player_id,
-            PYMONGO_TEAM: self.id,
-            PYMONGO_SEASON: season_id
+            League.PLAYER: player_id,
+            League.TEAM: self.id,
+            League.SEASON: season_id
         }
         return team_player_season_model
     
@@ -77,11 +88,9 @@ class Team:
         team_id = self.id 
         is_user_team = self.is_user_team
         team_model = {
-            PYMONGO_TEAM_NAME: team_name,
-            PYMONGO_TEAM_ID: team_id,
-            PYMONGO_TEAM_IS_USER_TEAM: is_user_team,
-            PYMONGO_RECORD: self.record.to_dict(),
-            PYMONGO_PLAYER_COLLECTION: [player.to_dict() for player in self.players]
+            self.NAME: team_name,
+            self.ID: team_id,
+            self.IS_USER_TEAM: is_user_team,
         }
 
         return team_model
