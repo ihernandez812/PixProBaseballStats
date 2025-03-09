@@ -7,7 +7,7 @@ class Playoffs:
     AL_CHAMPIONSHIP='confOneFinal'
     NL_CHAMPIONSHIP='confTwoFinal'
     AL_DIVISIONAL='confOneSemi{series}'
-    NL_DIVISONAL='confTwoSemi{series}'
+    NL_DIVISIONAL='confTwoSemi{series}'
     AL_WILDCARD='confOneWildcard'
     NL_WILDCARD='confTwoWildcard'
     
@@ -93,10 +93,10 @@ class Playoffs:
         return playoff_model
     
     def to_dict(self) -> dict[str,]:
-        nl_divisional_one = self.NL_DIVISONAL.format(series='0')
-        nl_divisional_two = self.NL_DIVISONAL.format(series='1')
-        al_divisional_one = self.NL_DIVISONAL.format(series='0')
-        al_divisional_two = self.NL_DIVISONAL.format(series='1')
+        nl_divisional_one = self.NL_DIVISIONAL.format(series='0')
+        nl_divisional_two = self.NL_DIVISIONAL.format(series='1')
+        al_divisional_one = self.AL_DIVISIONAL.format(series='0')
+        al_divisional_two = self.AL_DIVISIONAL.format(series='1')
         playoff_model = {
             self.NL_WILDCARD: self.nl_wildcard.to_dict(),
             self.AL_WILDCARD: self.al_wildcard.to_dict(),

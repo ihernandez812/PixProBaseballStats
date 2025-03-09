@@ -14,6 +14,7 @@ class Season:
     AWARDS='awards'
     HOF_CLASS='hofClass'
     REGULAR_SEASON='regularSeason'
+    YEAR='YEAR'
 
     def __init__(self, year: str, teams: list[Team], regular_season: list[Game], playoffs: Playoffs, awards: Awards) -> None:
         self.year = year
@@ -68,7 +69,7 @@ class Season:
     
     def to_dict(self) -> dict[str,]:
         return {
-            League.YEAR: self.year,
+            self.YEAR: self.year,
             self.PLAYOFFS: self.playoffs.to_dict(),
             self.REGULAR_SEASON: [game.to_dict() for game in self.regular_season],
             #PYMONGO_TEAMS: [team.to_dict() for team in self.teams],
