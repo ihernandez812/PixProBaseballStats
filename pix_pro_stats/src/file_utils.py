@@ -6,14 +6,34 @@ from datetime import datetime
 from date_time_encoder import DateTimeEncoder
 
 class FileUtils:
+    TEAM_NAMES_FILE='/UserTeamNames.json'
+    TEAM_FILE='/Team_{team_id}.json'
+    REGULAR_SEASON_DATA_FILE='/RegularSeasonData.json'
+    POST_SEASON_DATA_FILE='/PostSeasonData.json'
+    CY_YOUNG_STATS='./current_mlb_stats/cy_young_winner_stats.csv'
+    MVP_STATS='./current_mlb_stats/mvp_stats.csv'
+    BATTING_HOF_STATS='./current_mlb_stats/hof_batting.json'
+    PITCHING_HOF_STATS='./current_mlb_stats/hof_pitching.json'
+    PYMONGO_CONFIG='./config/password.json'
+    PYMONGO_PASS='mongodb_password'
+    LEAGUE_JSON_PATH="./seasons/league.json"
+    DIVISIONS_DATA_FILE='/AllLeaguesData.json'
+    PERIOD='.'
+    PLIST_FILE_EXT='.plist'
+    JSON_FILE_EXT='.json'
+    READ_FILE_BYTES='rb'
+    READ_FILE='r'
+    WRITE_FILE='w'
+    PLAIN_TXT_FILES_PATH='./app_data'
 
+    @DeprecationWarning
     def get_mongo_password() -> str:
-        mongo_config = FileUtils.read_json_file(PYMONGO_CONFIG)
-        return mongo_config.get(PYMONGO_PASS)
+        mongo_config = FileUtils.read_json_file(FileUtils.PYMONGO_CONFIG)
+        return mongo_config.get(FileUtils.PYMONGO_PASS)
 
     def read_json_file(file_path: str) -> dict:
         json_obj = {}
-        with open(file_path, READ_FILE) as file:
+        with open(file_path, FileUtils.READ_FILE) as file:
             file_str = file.read()
             json_obj = json.loads(file_str)
         return json_obj
@@ -25,7 +45,6 @@ class FileUtils:
     
     @staticmethod
     def change_file_ext(file_path: str, file_type: str) -> str:
-        print(file_path, file_path.split(PERIOD), os.path.splitext(file_path))
         file_name = os.path.splitext(file_path)[0]
         return f'{file_name}{file_type}'
 
@@ -48,22 +67,22 @@ class FileUtils:
 
     @staticmethod
     def convert_files_to_plist():
-        files = [os.path.join(PLAIN_TXT_FILES_PATH, file) for file in  os.listdir(PLAIN_TXT_FILES_PATH) if os.path.isfile(os.path.join(PLAIN_TXT_FILES_PATH, file))]
+        files = [os.path.join(FileUtils.PLAIN_TXT_FILES_PATH, file) for file in  os.listdir(FileUtils.PLAIN_TXT_FILES_PATH) if os.path.isfile(os.path.join(FileUtils.PLAIN_TXT_FILES_PATH, file))]
         for file in files:
             if 'DS_STORE' not in file:
-                FileUtils.change_file_type(file, PLIST_FILE_EXT)
+                FileUtils.change_file_type(file, FileUtils.PLIST_FILE_EXT)
             
     
     @staticmethod
     def convert_files_to_json():
-        files = [os.path.join(PLAIN_TXT_FILES_PATH, file) for file in  os.listdir(PLAIN_TXT_FILES_PATH) if os.path.isfile(os.path.join(PLAIN_TXT_FILES_PATH, file))]
+        files = [os.path.join(FileUtils.PLAIN_TXT_FILES_PATH, file) for file in  os.listdir(FileUtils.PLAIN_TXT_FILES_PATH) if os.path.isfile(os.path.join(FileUtils.PLAIN_TXT_FILES_PATH, file))]
         for file in files:
             if 'DS_Store' not in file:
-                file_obj = open(file, READ_FILE_BYTES)
-                json_path = FileUtils.change_file_ext(file, JSON_FILE_EXT)
+                file_obj = open(file, FileUtils.READ_FILE_BYTES)
+                json_path = FileUtils.change_file_ext(file, FileUtils.JSON_FILE_EXT)
                 json_file = json.dumps(FileUtils.bplist_dict(file_obj), cls=DateTimeEncoder, indent=4)
                 os.remove(file)
-                with open(json_path, WRITE_FILE) as f:
+                with open(json_path, FileUtils.WRITE_FILE) as f:
                     f.write(json_file)
   #  //json_file = json.dumps(bplist_dict(open('../../UserTeamNames.plist', 'rb')), cls=DateTimeEncoder, indent=4)
 

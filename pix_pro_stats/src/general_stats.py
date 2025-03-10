@@ -2,7 +2,16 @@ from constants import *
 import uuid
 
 class GeneralStats:
-
+    ID='id'
+    STRIKE_OUTS='strikeOuts'
+    AT_BATS='atBats'
+    WALKS='walks'
+    HOME_RUNS='homeRuns'
+    NUMBER_OF_GAMES='numGames'
+    STRIKES='strikes'
+    HITS='hits'
+    BALLS='balls'
+    RUNS='runs'
     def __init__(self, strike_outs: int, at_bats: int, walks: int, home_runs: int, num_games: int, strikes: int, hits: int, balls: int, runs: int, team_id: int):
         self.id = uuid.uuid4()
         self.strike_outs = strike_outs
@@ -76,32 +85,33 @@ class GeneralStats:
     def set_team_id(self, value: int):
         self.team_id = value
     
+    @DeprecationWarning
     def to_model(self) -> dict[int, int]:
         return {
-            PYMONGO_STATS_STRIKE_OUTS: self.strike_outs,
-            PYMONGO_STATS_AT_BATS: self.at_bats,
-            PYMONGO_TEAM: self.team_id,
-            PYMONGO_STATS_HOME_RUNS: self.home_runs,
-            PYMONGO_STATS_WALKS: self.walks,
-            PYMONGO_STATS_NUMBER_OF_GAMES: self.num_games,
-            PYMONGO_STATS_STRIKES: self.strikes,
-            PYMONGO_STATS_HITS: self.hits,
-            PYMONGO_STATS_BALLS: self.balls,
-            PYMONGO_STATS_RUNS: self.runs,
+            self.STRIKE_OUTS: self.strike_outs,
+            self.AT_BATS: self.at_bats,
+            League.TEAM: self.team_id,
+            self.HOME_RUNS: self.home_runs,
+            self.WALKS: self.walks,
+            self.NUMBER_OF_GAMES: self.num_games,
+            self.STRIKES: self.strikes,
+            self.HITS: self.hits,
+            self.BALLS: self.balls,
+            self.RUNS: self.runs,
         }
     
     def to_dict(self, season_year: int) -> dict[int, int]:
         return {
-            PYMONGO_STATS_ID: str(self.id),
-            PYMONGO_SEASON: season_year,
-            PYMONGO_STATS_STRIKE_OUTS: self.strike_outs,
-            PYMONGO_STATS_AT_BATS: self.at_bats,
-            PYMONGO_TEAM: self.team_id,
-            PYMONGO_STATS_HOME_RUNS: self.home_runs,
-            PYMONGO_STATS_WALKS: self.walks,
-            PYMONGO_STATS_NUMBER_OF_GAMES: self.num_games,
-            PYMONGO_STATS_STRIKES: self.strikes,
-            PYMONGO_STATS_HITS: self.hits,
-            PYMONGO_STATS_BALLS: self.balls,
-            PYMONGO_STATS_RUNS: self.runs,
+            self.ID: str(self.id),
+            League.SEASON: season_year,
+            self.STRIKE_OUTS: self.strike_outs,
+            self.AT_BATS: self.at_bats,
+            League.TEAM: self.team_id,
+            self.HOME_RUNS: self.home_runs,
+            self.WALKS: self.walks,
+            self.NUMBER_OF_GAMES: self.num_games,
+            self.STRIKES: self.strikes,
+            self.HITS: self.hits,
+            self.BALLS: self.balls,
+            self.RUNS: self.runs,
         }

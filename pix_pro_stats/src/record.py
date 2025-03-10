@@ -1,7 +1,9 @@
 from constants import *
 
 class Record:
-
+    GAMES_WON='gamesWon'
+    GAMES_PLAYED='gamesPlayed'
+    
     def __init__(self, games_won: int, games_played: int) -> None:
         self.games_won = games_won
         self.games_played = games_played
@@ -23,8 +25,8 @@ class Record:
         games_played = self.get_games_played()
 
         record_model = {
-            PYMONGO_GAMES_WON: games_won,
-            PYMONGO_GAMES_PLAYED: games_played
+            self.GAMES_WON: games_won,
+            self.GAMES_PLAYED: games_played
         }
         return record_model
     
@@ -33,7 +35,7 @@ class Record:
         games_played = self.get_games_played()
 
         record_model = {
-            PYMONGO_GAMES_WON: games_won,
-            PYMONGO_GAMES_PLAYED: games_played
+            self.GAMES_WON: games_won,
+            self.GAMES_PLAYED: games_played
         }
         return record_model

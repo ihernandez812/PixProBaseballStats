@@ -2,6 +2,13 @@ from player import Player
 from constants import *
 
 class Awards:
+    CY_YOUNG_MIN=2
+    MVP_MIN=3
+    MIN_GAMES=80
+    CY_YOUNG='cy_young'
+    MVP='mvp'
+    BATTING_TITLE='batting_title'
+    HOME_RUN_LEADER='home_run_leader'
 
     def __init__(self, cy_young: Player, mvp: Player, batting_title: Player, home_run_leader: Player) -> None:
         self.cy_young = cy_young
@@ -33,14 +40,15 @@ class Awards:
     def get_home_run_leader(self) -> None:
         return self.home_run_leader
 
+    @DeprecationWarning
     def to_model(self) -> dict[str, str]:
         model = {}
         if self.cy_young and self.mvp:
             cy_young_id = self.cy_young.get_id()
             mvp_id = self.mvp.get_id()
             model =  {
-                PYMONGO_CY_YOUNG: cy_young_id,
-                PYMONGO_MVP: mvp_id
+                self.CY_YOUNG: cy_young_id,
+                self.MVP: mvp_id
             }
         else:
             raise ValueError('Cy Young or MVP is None')
@@ -55,10 +63,10 @@ class Awards:
             batting_title_id = self.batting_title.get_id()
             home_run_leader_id = self.home_run_leader.get_id()
             model =  {
-                PYMONGO_CY_YOUNG: cy_young_id,
-                PYMONGO_MVP: mvp_id,
-                PYMONGO_BATTING_TITLE: batting_title_id,
-                PYMONGO_HOME_RUN_LEADER: home_run_leader_id
+                self.CY_YOUNG: cy_young_id,
+                self.MVP: mvp_id,
+                self.BATTING_TITLE: batting_title_id,
+                self.HOME_RUN_LEADER: home_run_leader_id
 
             }
         else:

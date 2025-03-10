@@ -3,7 +3,15 @@ from constants import *
 
 
 class BattingStats(GeneralStats):
-
+    SINGLES='base1'
+    DOUBLES='base2'
+    TRIPLES='base3'
+    CONTACT='contact'
+    SACRIFICE_FLYS='sacrifices'
+    STOLEN_BASES='stolen'
+    PLATE_APPERANCES='plateApp'
+    RBIS='runsBattedIn'
+    HIT_BY_PITCH='hitByPitch'
     def __init__(self,strike_outs: int=None, at_bats: int=None, singles: int=None, doubles: int=None, triples: int=None, home_runs: int=None, 
                 contact: int=None, sacrifice_flys: int=None, stolen_bases: int=None, walks: int=None, plate_apperances: int=None,
                 num_games: int=None, hits: int=None, rbis: int=None, strikes: int=None, balls: int=None, hit_by_pitch: int=None,
@@ -73,20 +81,21 @@ class BattingStats(GeneralStats):
     def set_hit_by_pitch(self, value: int):
         self.hit_by_pitch = value
 
+    @DeprecationWarning
     def to_model(self, player_id: str, season_id: str) -> dict[str,]:
         general_stats = super().to_model()
         batting_stats = {
-            PYMONGO_PLAYER: player_id,
-            PYMONGO_SEASON: season_id,
-            PYMONGO_STATS_SINGLES: self.singles,
-            PYMONGO_STATS_DOUBLES: self.doubles,
-            PYMONGO_STATS_TRIPLES: self.triples,
-            PYMONGO_STATS_CONTACT: self.contact,
-            PYMONGO_STATS_SACRIFICE_FLYS: self.sacrifice_flys,
-            PYMONGO_STATS_STOLEN_BASES: self.stolen_bases,
-            PYMONGO_STATS_PLATE_APPERANCES: self.plate_apperances,
-            PYMONGO_STATS_RBIS: self.rbis,
-            PYMONGO_STATS_HIT_BY_PITCH: self.hit_by_pitch,
+            League.PLAYER: player_id,
+            League.SEASON: season_id,
+            self.SINGLES: self.singles,
+            self.DOUBLES: self.doubles,
+            self.TRIPLES: self.triples,
+            self.CONTACT: self.contact,
+            self.SACRIFICE_FLYS: self.sacrifice_flys,
+            self.STOLEN_BASES: self.stolen_bases,
+            self.PLATE_APPERANCES: self.plate_apperances,
+            self.RBIS: self.rbis,
+            self.HIT_BY_PITCH: self.hit_by_pitch,
             
         }
         #combine the dictionarys
@@ -96,15 +105,15 @@ class BattingStats(GeneralStats):
     def to_dict(self, season_year: int) -> dict[str,]:
         general_stats = super().to_dict(season_year)
         batting_stats = {
-            PYMONGO_STATS_SINGLES: self.singles,
-            PYMONGO_STATS_DOUBLES: self.doubles,
-            PYMONGO_STATS_TRIPLES: self.triples,
-            PYMONGO_STATS_CONTACT: self.contact,
-            PYMONGO_STATS_SACRIFICE_FLYS: self.sacrifice_flys,
-            PYMONGO_STATS_STOLEN_BASES: self.stolen_bases,
-            PYMONGO_STATS_PLATE_APPERANCES: self.plate_apperances,
-            PYMONGO_STATS_RBIS: self.rbis,
-            PYMONGO_STATS_HIT_BY_PITCH: self.hit_by_pitch,
+            self.SINGLES: self.singles,
+            self.DOUBLES: self.doubles,
+            self.TRIPLES: self.triples,
+            self.CONTACT: self.contact,
+            self.SACRIFICE_FLYS: self.sacrifice_flys,
+            self.STOLEN_BASES: self.stolen_bases,
+            self.PLATE_APPERANCES: self.plate_apperances,
+            self.RBIS: self.rbis,
+            self.HIT_BY_PITCH: self.hit_by_pitch,
         }
         #combine the dictionarys
         batting_stats.update(general_stats)
