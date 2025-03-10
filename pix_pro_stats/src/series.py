@@ -4,7 +4,14 @@ from constants import *
 import uuid
 from uuid import UUID
 
+
 class Series:
+    ID='id'
+    LENGTH='seriesLength'
+    WINNER_ID='winner'
+    TEAM_ONE_ID=Game.PLAYOFFS_TEAM_ONE_ID
+    TEAM_TWO_ID=Game.PLAYOFFS_TEAM_TWO_ID 
+    NAME='name'
 
     def __init__(self, team_one: Team, team_two: Team, winner_id: int, games: list[Game], series_length: int, name: str) -> None:
         self.id = uuid.uuid4()
@@ -46,6 +53,7 @@ class Series:
 
         return series_winner
     
+    @DeprecationWarning
     def to_model(self, games: list[str]) -> dict[str, ]:
         team_one = self.team_one.get_id()
         team_two = self.team_two.get_id()
@@ -54,11 +62,11 @@ class Series:
         series_length = self.get_series_length()
 
         series_model = {
-            PYMONGO_TEAM_ONE: team_one,
-            PYMONGO_TEAM_TWO: team_two,
-            PYMONGO_WINNER: winner,
-            PYMONGO_GAMES: games,
-            PYMONGO_SERIES_LENGTH: series_length
+            self.TEAM_ONE_ID: team_one,
+            self.TEAM_TWO_ID: team_two,
+            self.WINNER_ID: winner,
+            League.FIXTURES: games,
+            self.LENGTH: series_length
         }
         return series_model
     
@@ -71,12 +79,12 @@ class Series:
         series_length = self.get_series_length()
 
         series_model = {
-            PYMONGO_SERIES_ID: str(self.id),
-            PYMONGO_TEAM_ONE: team_one,
-            PYMONGO_TEAM_TWO: team_two,
-            PYMONGO_WINNER: winner,
-            PYMONGO_GAMES: [game.to_dict() for game in self.games],
-            PYMONGO_SERIES_LENGTH: series_length,
-            PYMONGO_SERIES_NAME: self.name
+            self.ID: str(self.id),
+            self.TEAM_ONE_ID: team_one,
+            self.TEAM_TWO_ID: team_two,
+            self.WINNER_ID: winner,
+            League.FIXTURES: [game.to_dict() for game in self.games],
+            self.LENGTH: series_length,
+            self.NAME: self.name
         }
         return series_model

@@ -4,6 +4,8 @@ import uuid
 from uuid import UUID
 
 class Division:
+    ID='id'
+    NAME='name'
     def __init__(self, name: str, teams: list[str], conference: str) -> None:
         self.id = uuid.uuid4()
         self.name = name
@@ -27,9 +29,9 @@ class Division:
 
     def to_dict(self) -> dict:
         return {
-            PYMONGO_DIVISION_ID: str(self.id),
-            PYMONGO_DIVISION_NAME: self.name,
-            PYMONGO_DIVISION_TEAMS: self.teams,
-            PYMONGO_DIVISION_CONFERENCE: self.conference
+            self.ID: str(self.id),
+            self.NAME: self.name,
+            League.TEAMS: self.teams,
+            League.CONFERENCE: self.conference
         }
     
