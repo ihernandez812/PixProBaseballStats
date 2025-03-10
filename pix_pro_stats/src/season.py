@@ -14,7 +14,7 @@ class Season:
     AWARDS='awards'
     HOF_CLASS='hofClass'
     REGULAR_SEASON='regularSeason'
-    YEAR='YEAR'
+    YEAR='year'
 
     def __init__(self, year: str, teams: list[Team], regular_season: list[Game], playoffs: Playoffs, awards: Awards) -> None:
         self.year = year
