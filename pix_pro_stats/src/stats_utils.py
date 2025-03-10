@@ -298,12 +298,13 @@ class StatsUtils:
         innings_pitched = innings_outs / 3
         #Starters typically make every 5th starts
         average_games_pitches = num_games // 5
-        if era <= stats[BaseballReference.CSV_ERA]:
-            points += 1
-        if strikes_per_inning >= stats[BaseballReference.CSV_STRIKE_OUTS]:
-            points += 1
         if (innings_pitched / average_games_pitches) >= Awards.CY_YOUNG_MIN_INNINGS:
             points +=1
+            if era <= stats[BaseballReference.CSV_ERA]:
+                points += 1
+            if strikes_per_inning >= stats[BaseballReference.CSV_STRIKE_OUTS]:
+                points += 1
+        
         return points
 
     @staticmethod
