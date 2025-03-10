@@ -161,6 +161,6 @@ class PlayerType(Enum):
 
 class PitcherType(Enum):
     NOT_PITCHER=-1
-    PITCHER_STATER=0
-    PTICHER_RELIEVER=1
-    PITCHER_CLOSER=2
+    STATER=0
+    RELIEVER=1
+    CLOSER=2

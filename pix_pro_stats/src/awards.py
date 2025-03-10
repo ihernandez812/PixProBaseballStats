@@ -4,6 +4,9 @@ from constants import *
 class Awards:
     CY_YOUNG_MIN=2
     MVP_MIN=3
+    CY_YOUNG_MIN_INNINGS=1
+    #Normally it is 3.1 but there are only 3 innings per game so they are only gaurenteed 1 AB
+    BATTER_MIN_AT_BATS=1.1
     MIN_GAMES=80
     CY_YOUNG='cy_young'
     MVP='mvp'
