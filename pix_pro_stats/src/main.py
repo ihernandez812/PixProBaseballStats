@@ -233,7 +233,8 @@ def create_awards(teams: list[Team]) -> Awards:
         if StatsUtils.is_mvp_canidate(player, avg_mvp_winner):
             mvp_winner = StatsUtils.get_mvp_winner(player, mvp_winner)
         if player.get_position() != PlayerType.PITCHER.value:
-            batting_title = StatsUtils.get_batting_title_winner(player, batting_title)
+            if StatsUtils.is_min_batting_stats(player.get_season_batting()):
+                batting_title = StatsUtils.get_batting_title_winner(player, batting_title)
             home_run_leader = StatsUtils.get_home_run_leader_winner(player, home_run_leader)
     awards = Awards(cy_young_winner, mvp_winner, batting_title, home_run_leader)
     return awards

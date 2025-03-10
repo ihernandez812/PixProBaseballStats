@@ -1,7 +1,7 @@
 from pitching_stats import PitchingStats
 from general_stats import GeneralStats
 from batting_stats import BattingStats
-from player import Player, PlayerType
+from player import Player, PlayerType, PitcherType
 from awards import Awards
 from pymongo_utils import PyMongoUtils
 from file_utils import FileUtils
@@ -233,6 +233,10 @@ class StatsUtils:
         player_two_strike_outs_per_inning = StatsUtils.calculate_strikes_outs_per_inning(player_two_pitching)
         player_one_whip = StatsUtils.calculate_whip(player_one_pitching)
         player_two_whip = StatsUtils.calculate_whip(player_two_pitching)
+        player_one_innings_pitched = player_one_pitching.get_innings_outs() / 3
+        player_two_innings_pitched = player_two_pitching.get_innings_outs() / 3
+        player_one_strike_outs = player_one_pitching.get_strike_outs()
+        player_two_strike_outs = player_two_pitching.get_strike_outs()
         
         
         if player_one_era != player_two_era:
@@ -240,16 +244,32 @@ class StatsUtils:
                 player_one_points+=1
             else:
                 player_two_points+=1
-        if player_one_strike_outs_per_inning != player_two_strike_outs_per_inning:
-            if player_one_strike_outs_per_inning > player_two_strike_outs_per_inning:
+        #Starters are more likely to win so give them a boost
+        if player_one_innings_pitched != player_two_innings_pitched:
+            if player_one_innings_pitched > player_two_innings_pitched:
                 player_one_points+=1
             else:
                 player_two_points+=1
+
         if player_one_whip != player_two_whip:
             if player_one_whip < player_two_whip:
-                player_one_points+=1
+                player_one_points+=.9
             else:
-                player_two_points+=1
+                player_two_points+=.9
+        if player_one_strike_outs_per_inning != player_two_strike_outs_per_inning:
+            if player_one_strike_outs_per_inning > player_two_strike_outs_per_inning:
+                player_one_points+=.7
+            else:
+                player_two_points+=.7
+        if player_one_strike_outs != player_two_strike_outs:
+            if player_one_strike_outs > player_two_strike_outs:
+                player_one_points+=.5
+            else:
+                player_two_points+=.5
+
+        
+        
+        
         winner = None
         if player_one_points > player_two_points:
             winner = player_one
@@ -273,13 +293,17 @@ class StatsUtils:
         points = 0
         era = StatsUtils.calculate_era(player_pitching)
         strikes_per_inning = StatsUtils.calculate_strikes_outs_per_inning(player_pitching)
+        innings_outs = player_pitching.get_innings_outs()
         num_games = player_pitching.get_num_games()
+        innings_pitched = innings_outs / 3
+        #Starters typically make every 5th starts
+        average_games_pitches = num_games // 5
         if era <= stats[BaseballReference.CSV_ERA]:
             points += 1
         if strikes_per_inning >= stats[BaseballReference.CSV_STRIKE_OUTS]:
             points += 1
-        if num_games >= Awards.MIN_GAMES:
-            points+=.5
+        if (innings_pitched / average_games_pitches) >= Awards.CY_YOUNG_MIN_INNINGS:
+            points +=1
         return points
 
     @staticmethod
@@ -425,12 +449,17 @@ class StatsUtils:
         return points
 
     @staticmethod
+    def is_min_batting_stats(player_batting: BattingStats) -> bool:
+        return player_batting.get_at_bats() / player_batting.get_num_games() >= Awards.BATTER_MIN_AT_BATS
+
+
+    @staticmethod
     def is_mvp_canidate(player: Player, stats: dict[str,]) -> Player:
         is_canidate = False
         if player.get_position() != PlayerType.PITCHER.value:
             player_batting = player.get_season_batting()
             points = StatsUtils.calculate_mvp_points(player_batting, stats)
-            if points >= Awards.MVP_MIN:
+            if points >= Awards.MVP_MIN and StatsUtils.is_min_batting_stats(player_batting):
                 is_canidate = True
         return is_canidate
 
