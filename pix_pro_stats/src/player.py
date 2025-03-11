@@ -20,7 +20,7 @@ class Player:
     BATTING_STATS='battingStats'
     PITCHING_STATS='pitchingStats'
     AGE='age'
-    def __init__(self, id: str, name: str, age: int, handedness: int, position: int, pitcher_type: int, designated_hitter: bool, season_batting: BattingStats,
+    def __init__(self, id: str, name: str, age: int, overall: float, handedness: int, position: int, pitcher_type: int, designated_hitter: bool, season_batting: BattingStats,
                 season_pitching: PitchingStats,  is_hof: bool):
         self.id = id
         self.name = name
@@ -33,6 +33,7 @@ class Player:
         self.is_hof = is_hof
         #Only need this if this is a brand new player
         self.age = age
+        self.overall = overall
 
     def get_id(self) -> str:
         return self.id
