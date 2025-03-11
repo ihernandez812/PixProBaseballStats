@@ -19,8 +19,8 @@ class Player:
     IS_HOF='is_hof'
     BATTING_STATS='battingStats'
     PITCHING_STATS='pitchingStats'
-
-    def __init__(self, id: str, name: str, handedness: int, position: int, pitcher_type: int, designated_hitter: bool, season_batting: BattingStats,
+    AGE='age'
+    def __init__(self, id: str, name: str, age: int, handedness: int, position: int, pitcher_type: int, designated_hitter: bool, season_batting: BattingStats,
                 season_pitching: PitchingStats,  is_hof: bool):
         self.id = id
         self.name = name
@@ -31,6 +31,8 @@ class Player:
         self.season_batting = season_batting
         self.season_pitching = season_pitching
         self.is_hof = is_hof
+        #Only need this if this is a brand new player
+        self.age = age
 
     def get_id(self) -> str:
         return self.id
@@ -44,11 +46,11 @@ class Player:
     def set_name(self, value: str):
         self.name = value
 
-    def get_age(self) -> int:
-        return self.age
+    def get_age(self, year: int) -> int:
+        return self.age[year]
     
-    def set_age(self, age: int):
-        self.age = age
+    def set_age(self, year: int, age: int):
+        self.age[year] = age
 
     def get_handedness(self) -> int:
         return self.handedness
@@ -112,37 +114,39 @@ class Player:
         }
         return player_model
     
-    def to_dict(self, season_year: int, current_player_pitching: list, current_player_batting: list) -> dict[str,]:
-        player_id = self.get_id()
-        player_name = self.get_name()
-        player_handedness = self.get_handedness()
-        player_position = self.get_position()
-        player_pitcher_type = self.get_pitcher_type()
-        player_designated_hitter = self.get_designated_hitter()
-        player_is_hof = self.get_is_hof()
+    def to_dict(self, season_year: int, current_player_pitching: list=None, current_player_batting: list=None, current_player_age: int=0) -> dict[str,]:
+        if current_player_batting is None:
+            current_player_batting = []
+        if current_player_pitching is None:
+            current_player_pitching = []
+
         player_season_pitching = {}
-        # player_team_pitching = {}
         player_season_batting = {}
-        # player_team_batting = {}
-        if player_position == PlayerType.PITCHER.value:
-            player_season_pitching = self.get_season_pitching().to_dict(season_year)
+        if self.position == PlayerType.PITCHER.value:
+            player_season_pitching = self.season_pitching.to_dict(season_year)
             current_player_pitching.append(player_season_pitching)
         else:
-            player_season_batting = self.get_season_batting().to_dict(season_year)
+            player_season_batting = self.season_batting.to_dict(season_year)
             current_player_batting.append(player_season_batting)
 
+        #There is a bug in the app so I need to update the age based off the last season
+        #If it is zero it means it was a new player and we can just use the one from the json
+        if current_player_age != 0:
+            self.age = current_player_age+1
+        
+            
+
         player_model = {
-            Player.ID: player_id,
-            Player.NAME: player_name,
-            Player.HANDEDNESS: player_handedness,
-            Player.POSITION: player_position,
-            Player.PITCHING_TYPE: player_pitcher_type,
-            Player.DESIGNATED_HITTER: player_designated_hitter,
+            Player.ID: self.id,
+            Player.NAME: self.name,
+            Player.AGE: self.age,
+            Player.HANDEDNESS: self.handedness,
+            Player.POSITION: self.position,
+            Player.PITCHING_TYPE: self.pitcher_type,
+            Player.DESIGNATED_HITTER: self.designated_hitter,
             Player.PITCHING_STATS: current_player_pitching,
-            # PYMONGO_TEAM_PITCHING_STATS_COLLECTION: player_team_pitching,
             Player.BATTING_STATS: current_player_batting,
-            # PYMONGO_TEAM_BATTING_STATS_COLLECTION: player_team_batting,
-            Player.IS_HOF: player_is_hof
+            Player.IS_HOF: self.is_hof
         }
         return player_model
 

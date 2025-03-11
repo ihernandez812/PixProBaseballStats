@@ -169,6 +169,7 @@ def get_pitcher_type(pitching_obj: dict[str,]) -> int:
 def create_player(player_obj: dict[str,], curr_team: Team) -> Player:
     player_id = player_obj.get(Player.ID, -1)
     name = player_obj.get(Player.NAME, 'N. Name')
+    age = player_obj.get(Player.AGE, 0)
     handedness = player_obj.get(Player.HANDEDNESS, 1)
     position = player_obj.get(Player.POSITION, 0)
     pitching_obj = player_obj.get(Player.PITCHING, {})
@@ -184,7 +185,7 @@ def create_player(player_obj: dict[str,], curr_team: Team) -> Player:
 
     is_hof = False
 
-    player = Player(player_id, name, handedness, position, pitcher_type, designated_hitter, season_batting, season_pitching, is_hof)
+    player = Player(player_id, name, age, handedness, position, pitcher_type, designated_hitter, season_batting, season_pitching, is_hof)
     return player
 
 def create_players(players_list: list[dict[str,]], team: Team) -> None:
@@ -292,7 +293,7 @@ def check_for_new_year(current_league_data: dict):
     is_new_year = True
     seasons = current_league_data.get(League.SEASONS, [])
     for season in seasons:
-        if season[League.YEAR] == League.YEAR:
+        if season[Season.YEAR] == League.YEAR:
             is_new_year = False
 
     return is_new_year
@@ -355,10 +356,11 @@ if __name__ == '__main__':
                     current_player_data = player_list[player_idx]
                     current_player_batting = current_player_data.get(Player.BATTING_STATS, [])
                     current_player_pitching = current_player_data.get(Player.PITCHING_STATS, [])
-                    updated_player = player.to_dict(season.get_year(), current_player_pitching, current_player_batting)
+                    current_player_age = current_league_data.get(Player.AGE, 0)
+                    updated_player = player.to_dict(season.get_year(), current_player_pitching, current_player_batting, current_player_age)
                     player_list[player_idx] = updated_player
                 else:
-                    updated_player = player.to_dict(season.get_year(), [], [])
+                    updated_player = player.to_dict(season.get_year())
                     player_list.append(updated_player)
                 
                 player_ids.append(player.get_id())
@@ -374,6 +376,7 @@ if __name__ == '__main__':
         season_dict[Season.TEAM_PLAYERS] = season_team_to_players
         season_dict[Season.TEAM_RECORD] = season_team_to_record
         current_seasons.append(season_dict)
+
         leauge_dict = {
             League.DIVISIONS: [division.to_dict() for division in divisions],
             League.TEAMS: team_list,
