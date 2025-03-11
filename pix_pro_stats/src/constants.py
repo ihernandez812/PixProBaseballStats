@@ -1,6 +1,3 @@
-
-
-
 class League:
     MAJOR_LEAGUE_NAME='Major League'
     NAME='name'
