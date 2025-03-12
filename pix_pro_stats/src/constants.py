@@ -19,6 +19,44 @@ class League:
     PLAYERS='players'
     PLAYER='player'
 
+class PitchingAttributes:
+    KEY='pitching'
+    ENERGY='energy'
+    BASE_ENERGY='baseEnergy'
+    SPEED='speed'
+    INTELIGENCE='inteligence'
+    STAMINA='stamina'
+    ACCURACY='accuracy'
+    MOVEMENT='movement'
+    NUM_ATTRIBUTES=6
+    ALL=[SPEED, INTELIGENCE, STAMINA, ACCURACY, MOVEMENT, BASE_ENERGY, BASE_ENERGY]
+
+class BattingAttributes:
+    KEY='batting'
+    SKILL='skill'
+    POWER='power'
+    REACTIONS='reactions'
+    INTELIGENCE='inteligence'
+    NUM_ATTRIBUTES=4
+    ALL=[SKILL, POWER, REACTIONS, INTELIGENCE]
+
+class FieldingAttributes:
+    KEY='fielding'
+    POWER='power'
+    SPEED='speed'
+    REACTIONS='reactions'
+    ACCURACY='accuracy'
+    CATCHING='catching'
+    NUM_ATTRIBUTES=5
+    ALL=[POWER, SPEED, REACTIONS, ACCURACY, CATCHING]
+
+class BaseRunningAttributes:
+    KEY='running'
+    SPEED='speed'
+    REACTIONS='reactions'
+    NUM_ATTRIBUTES=2
+    ALL=[SPEED, REACTIONS]
+
 class HallOfFame:
     BATTING_HOF_MIN=9
     PITCHING_HOF_MIN=5

@@ -1,11 +1,9 @@
-from os import listdir, remove
-from os.path import isfile, join, exists
-from pathlib import Path
-from constants import League  
+from os.path import exists
+from constants import League, PitchingAttributes, BattingAttributes, BaseRunningAttributes, FieldingAttributes  
 from file_utils import FileUtils
 from stats_utils import StatsUtils
 from team import Team
-from player import Player, PlayerType, PitcherType
+from player import Player, PlayerType
 from record import Record
 from pitching_stats import PitchingStats
 from batting_stats import BattingStats
@@ -166,6 +164,43 @@ def get_pitcher_type(pitching_obj: dict[str,]) -> int:
     pitcher_type = pitching_obj.get(Player.PITCHING_TYPE, -1)
     return pitcher_type
 
+def add_player_attributes(attributes: dict, keys: list[str]) -> float:
+    total = 0
+    for key in keys:
+        attribute = attributes.get(key, 0)
+        #From what I've seen the app takes the long decimal 
+        #rounds it to the nearest thousandths and gets the average
+        #from there
+        total += round(attribute, 3)
+    return total
+
+def create_player_overall(player_obj: dict[str,], position: int) -> float:
+    battingAttrs = player_obj.get(BattingAttributes.KEY, {})
+    pitchingAttrs = player_obj.get(PitchingAttributes.KEY, {})
+    baseRunningAttrs = player_obj.get(BaseRunningAttributes.KEY, {})
+    fieldingAttrs = player_obj.get(FieldingAttributes.KEY)
+    total = 0
+    total += add_player_attributes(battingAttrs, BattingAttributes.ALL)
+    total += add_player_attributes(baseRunningAttrs, BaseRunningAttributes.ALL)
+    total += add_player_attributes(fieldingAttrs, FieldingAttributes.ALL)
+    num_attributes = FieldingAttributes.NUM_ATTRIBUTES + BattingAttributes.NUM_ATTRIBUTES + BaseRunningAttributes.NUM_ATTRIBUTES
+    #Not entirely sure how the app does pitcher overall
+    #From what I can see it is everything including energy and base energy
+    #divided by one less than the total number of attributes. Odd but that
+    #is the only math that makes sense to me
+    #so instead of doing the overall of them at that time add base energy twice
+    #as if they were at full strength
+    if position == PlayerType.PITCHER.value:
+        total += add_player_attributes(pitchingAttrs, PitchingAttributes.ALL)
+        num_attributes += PitchingAttributes.NUM_ATTRIBUTES
+    
+    overall = total / num_attributes
+    overall = overall * 100
+    overall = round(overall, 1)
+    return overall
+    
+
+
 def create_player(player_obj: dict[str,], curr_team: Team) -> Player:
     player_id = player_obj.get(Player.ID, -1)
     name = player_obj.get(Player.NAME, 'N. Name')
@@ -182,10 +217,12 @@ def create_player(player_obj: dict[str,], curr_team: Team) -> Player:
     
     season_pitching = create_pitching_stats(season_pitching_obj)
     season_batting = create_batting_stats(season_batting_obj)
-
+    
+    overall = create_player_overall(player_obj, position)
     is_hof = False
 
-    player = Player(player_id, name, age, handedness, position, pitcher_type, designated_hitter, season_batting, season_pitching, is_hof)
+
+    player = Player(player_id, name, age, overall, handedness, position, pitcher_type, designated_hitter, season_batting, season_pitching, is_hof)
     return player
 
 def create_players(players_list: list[dict[str,]], team: Team) -> None:
@@ -321,8 +358,8 @@ def create_divisions() -> list[Division]:
 if __name__ == '__main__':
     debug = True
     #convert_files()
+    #(82.4+80+9+88.7+77.5+79.6+68.8+91.4+95.9+86.8+96.6+78+77.7+61+6+89.7+87+9+70.3+97.5+78.1)/17
     current_league_data = {}
-
     if(exists(FileUtils.LEAGUE_JSON_PATH)):
         current_league_data = FileUtils.read_json_file(FileUtils.LEAGUE_JSON_PATH)
     is_new_year = check_for_new_year(current_league_data)
@@ -356,8 +393,9 @@ if __name__ == '__main__':
                     current_player_data = player_list[player_idx]
                     current_player_batting = current_player_data.get(Player.BATTING_STATS, [])
                     current_player_pitching = current_player_data.get(Player.PITCHING_STATS, [])
+                    current_player_overall = current_player_data.get(Player.OVERALLS, [])
                     current_player_age = current_league_data.get(Player.AGE, 0)
-                    updated_player = player.to_dict(season.get_year(), current_player_pitching, current_player_batting, current_player_age)
+                    updated_player = player.to_dict(season.get_year(), current_player_pitching, current_player_batting, current_player_age, current_player_overall)
                     player_list[player_idx] = updated_player
                 else:
                     updated_player = player.to_dict(season.get_year())
@@ -386,7 +424,6 @@ if __name__ == '__main__':
             
 
         }
-        
         with open(FileUtils.LEAGUE_JSON_PATH, 'w') as f:
             f.write(json.dumps(leauge_dict))
     else:
