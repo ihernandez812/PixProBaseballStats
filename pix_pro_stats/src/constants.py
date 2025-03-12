@@ -7,7 +7,7 @@ class League:
     DIVISIONS='divisions'
     DIVISIONS_NAME='name'
     DIVISIONS_TEAMS='teamIdInts'
-    YEAR=2023
+    YEAR=2024
     MAJOR_LEAGUE=0
     LEAGUE_TYPE='l'
     FIXTURES='fixtures'
