@@ -20,6 +20,7 @@ class Player:
     BATTING_STATS='battingStats'
     PITCHING_STATS='pitchingStats'
     AGE='age'
+    OVERALLS='overalls'
     def __init__(self, id: str, name: str, age: int, overall: float, handedness: int, position: int, pitcher_type: int, designated_hitter: bool, season_batting: BattingStats,
                 season_pitching: PitchingStats,  is_hof: bool):
         self.id = id
@@ -115,11 +116,14 @@ class Player:
         }
         return player_model
     
-    def to_dict(self, season_year: int, current_player_pitching: list=None, current_player_batting: list=None, current_player_age: int=0) -> dict[str,]:
+    def to_dict(self, season_year: int, current_player_pitching: list=None, current_player_batting: list=None, 
+                current_player_age: int=0, current_player_overalls: dict=None) -> dict[str,]:
         if current_player_batting is None:
             current_player_batting = []
         if current_player_pitching is None:
             current_player_pitching = []
+        if current_player_overalls is None:
+            current_player_overalls = {}
 
         player_season_pitching = {}
         player_season_batting = {}
@@ -134,13 +138,16 @@ class Player:
         #If it is zero it means it was a new player and we can just use the one from the json
         if current_player_age != 0:
             self.age = current_player_age+1
+
+        current_player_overalls[League.YEAR] = self.overall
         
-            
+        
 
         player_model = {
             Player.ID: self.id,
             Player.NAME: self.name,
             Player.AGE: self.age,
+            Player.OVERALLS: current_player_overalls,
             Player.HANDEDNESS: self.handedness,
             Player.POSITION: self.position,
             Player.PITCHING_TYPE: self.pitcher_type,

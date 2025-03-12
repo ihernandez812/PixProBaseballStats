@@ -174,21 +174,30 @@ def add_player_attributes(attributes: dict, keys: list[str]) -> float:
         total += round(attribute, 3)
     return total
 
-def create_player_overall(player_obj: dict[str,]) -> float:
+def create_player_overall(player_obj: dict[str,], position: int) -> float:
     battingAttrs = player_obj.get(BattingAttributes.KEY, {})
     pitchingAttrs = player_obj.get(PitchingAttributes.KEY, {})
     baseRunningAttrs = player_obj.get(BaseRunningAttributes.KEY, {})
     fieldingAttrs = player_obj.get(FieldingAttributes.KEY)
     total = 0
     total += add_player_attributes(battingAttrs, BattingAttributes.ALL)
-    total += add_player_attributes(pitchingAttrs, PitchingAttributes.ALL)
     total += add_player_attributes(baseRunningAttrs, BaseRunningAttributes.ALL)
     total += add_player_attributes(fieldingAttrs, FieldingAttributes.ALL)
-    num_attributes = BattingAttributes.NUM_ATTRIBUTES + PitchingAttributes.NUM_ATTRIBUTES 
-    + BaseRunningAttributes.NUM_ATTRIBUTES + FieldingAttributes.NUM_ATTRIBUTES
-
-    overall = round(total / num_attributes, 3)
-    return overall * 100
+    num_attributes = FieldingAttributes.NUM_ATTRIBUTES + BattingAttributes.NUM_ATTRIBUTES + BaseRunningAttributes.NUM_ATTRIBUTES
+    #Not entirely sure how the app does pitcher overall
+    #From what I can see it is everything including energy and base energy
+    #divided by one less than the total number of attributes. Odd but that
+    #is the only math that makes sense to me
+    #so instead of doing the overall of them at that time add base energy twice
+    #as if they were at full strength
+    if position == PlayerType.PITCHER.value:
+        total += add_player_attributes(pitchingAttrs, PitchingAttributes.ALL)
+        num_attributes += PitchingAttributes.NUM_ATTRIBUTES
+    
+    overall = total / num_attributes
+    overall = overall * 100
+    overall = round(overall, 1)
+    return overall
     
 
 
@@ -208,11 +217,12 @@ def create_player(player_obj: dict[str,], curr_team: Team) -> Player:
     
     season_pitching = create_pitching_stats(season_pitching_obj)
     season_batting = create_batting_stats(season_batting_obj)
-    overall = create_player_overall(player_obj)
+    
+    overall = create_player_overall(player_obj, position)
     is_hof = False
 
 
-    player = Player(player_id, name, age, handedness, position, pitcher_type, designated_hitter, season_batting, season_pitching, is_hof)
+    player = Player(player_id, name, age, overall, handedness, position, pitcher_type, designated_hitter, season_batting, season_pitching, is_hof)
     return player
 
 def create_players(players_list: list[dict[str,]], team: Team) -> None:
@@ -346,8 +356,9 @@ def create_divisions() -> list[Division]:
 
 
 if __name__ == '__main__':
-    debug = False
-    convert_files()
+    debug = True
+    #convert_files()
+    #(82.4+80+9+88.7+77.5+79.6+68.8+91.4+95.9+86.8+96.6+78+77.7+61+6+89.7+87+9+70.3+97.5+78.1)/17
     current_league_data = {}
     if(exists(FileUtils.LEAGUE_JSON_PATH)):
         current_league_data = FileUtils.read_json_file(FileUtils.LEAGUE_JSON_PATH)
@@ -382,8 +393,9 @@ if __name__ == '__main__':
                     current_player_data = player_list[player_idx]
                     current_player_batting = current_player_data.get(Player.BATTING_STATS, [])
                     current_player_pitching = current_player_data.get(Player.PITCHING_STATS, [])
+                    current_player_overall = current_player_data.get(Player.OVERALLS, [])
                     current_player_age = current_league_data.get(Player.AGE, 0)
-                    updated_player = player.to_dict(season.get_year(), current_player_pitching, current_player_batting, current_player_age)
+                    updated_player = player.to_dict(season.get_year(), current_player_pitching, current_player_batting, current_player_age, current_player_overall)
                     player_list[player_idx] = updated_player
                 else:
                     updated_player = player.to_dict(season.get_year())
@@ -412,7 +424,6 @@ if __name__ == '__main__':
             
 
         }
-        
         with open(FileUtils.LEAGUE_JSON_PATH, 'w') as f:
             f.write(json.dumps(leauge_dict))
     else:

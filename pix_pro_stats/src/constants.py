@@ -21,14 +21,15 @@ class League:
 
 class PitchingAttributes:
     KEY='pitching'
-    ENGERGY='baseEnergy'
+    ENERGY='energy'
+    BASE_ENERGY='baseEnergy'
     SPEED='speed'
     INTELIGENCE='inteligence'
     STAMINA='stamina'
     ACCURACY='accuracy'
     MOVEMENT='movement'
     NUM_ATTRIBUTES=6
-    ALL=[ENGERGY, SPEED, INTELIGENCE, STAMINA, ACCURACY, MOVEMENT]
+    ALL=[SPEED, INTELIGENCE, STAMINA, ACCURACY, MOVEMENT, BASE_ENERGY, BASE_ENERGY]
 
 class BattingAttributes:
     KEY='batting'
