@@ -10,7 +10,7 @@
                 27,
                 7
             ],
-            "conference": "A League"
+            "conference": "AL"
         },
         {
             "id": "c1d8c870-ffa0-4fa3-a04a-7ebde2ee41fe",
@@ -22,7 +22,7 @@
                 10,
                 29
             ],
-            "conference": "A League"
+            "conference": "AL"
         },
         {
             "id": "2e304b5d-ebf9-4f28-844e-f71b8e42a998",
@@ -34,7 +34,7 @@
                 12,
                 26
             ],
-            "conference": "A League"
+            "conference": "AL"
         },
         {
             "id": "744efde7-73a1-4d75-b5b9-bf705c868263",
@@ -46,7 +46,7 @@
                 3,
                 8
             ],
-            "conference": "N League"
+            "conference": "NL"
         },
         {
             "id": "a191ad4a-c967-4102-9569-38b174511196",
@@ -58,7 +58,7 @@
                 17,
                 21
             ],
-            "conference": "N League"
+            "conference": "NL"
         },
         {
             "id": "be65093f-783e-4db8-93ac-1ad2b406ecc3",
@@ -70,7 +70,7 @@
                 20,
                 23
             ],
-            "conference": "N League"
+            "conference": "NL"
         }
     ],
     "teams": [
