@@ -250,6 +250,7 @@ def create_teams() -> None:
         new_team = Team(team_id, team_name)
         teams[team_id] = new_team
 
+
 def get_user_team(teams: list[Team]) -> Team:
     user_team = None
     for team in teams:
@@ -313,7 +314,7 @@ def create_season() -> Season:
 def get_index_by_id(object_list, id, key) -> int:
     #if we don't find the index then the next slot is the idx
     idx = -1
-    for i in range(len(object_list) -1):
+    for i in range(len(object_list)):
         obj = object_list[i]
         if obj[key] == id:
             idx = i
