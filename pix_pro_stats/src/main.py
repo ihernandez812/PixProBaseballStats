@@ -215,8 +215,8 @@ def create_player(player_obj: dict[str,], curr_team: Team) -> Player:
     season_batting_obj = stats_obj.get(Player.SEASON_BATTING, {})
     
     
-    season_pitching = create_pitching_stats(season_pitching_obj)
-    season_batting = create_batting_stats(season_batting_obj)
+    season_pitching = create_pitching_stats(season_pitching_obj, curr_team)
+    season_batting = create_batting_stats(season_batting_obj, curr_team)
     
     overall = create_player_overall(player_obj, position)
     is_hof = False
