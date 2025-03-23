@@ -160,10 +160,6 @@ def create_batting_stats(batting_obj: dict[str,], curr_team: Team=None) -> Batti
 
     return player_batting_stats
 
-def get_pitcher_type(pitching_obj: dict[str,]) -> int:
-    pitcher_type = pitching_obj.get(Player.PITCHING_TYPE, -1)
-    return pitcher_type
-
 def add_player_attributes(attributes: dict, keys: list[str]) -> float:
     total = 0
     for key in keys:
@@ -208,7 +204,8 @@ def create_player(player_obj: dict[str,], curr_team: Team) -> Player:
     handedness = player_obj.get(Player.HANDEDNESS, 1)
     position = player_obj.get(Player.POSITION, 0)
     pitching_obj = player_obj.get(Player.PITCHING, {})
-    pitcher_type = get_pitcher_type(pitching_obj)
+    pitcher_type = pitching_obj.get(Player.PITCHING_TYPE, -1)
+    pitch_types = pitching_obj.get(Player.PITCH_TYPES, [])
     designated_hitter = player_obj.get(Player.DESIGNATED_HITTER)
     stats_obj = player_obj.get(Player.STATS, {})
     season_pitching_obj = stats_obj.get(Player.SEASON_PITCHING, {})
@@ -222,7 +219,7 @@ def create_player(player_obj: dict[str,], curr_team: Team) -> Player:
     is_hof = False
 
 
-    player = Player(player_id, name, age, overall, handedness, position, pitcher_type, designated_hitter, season_batting, season_pitching, is_hof)
+    player = Player(player_id, name, age, overall, handedness, position, pitcher_type, pitch_types, designated_hitter, season_batting, season_pitching, is_hof)
     return player
 
 def create_players(players_list: list[dict[str,]], team: Team) -> None:

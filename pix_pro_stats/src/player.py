@@ -21,7 +21,9 @@ class Player:
     PITCHING_STATS='pitchingStats'
     AGE='age'
     OVERALLS='overalls'
-    def __init__(self, id: str, name: str, age: int, overall: float, handedness: int, position: int, pitcher_type: int, designated_hitter: bool, season_batting: BattingStats,
+    PITCH_TYPES='pitchTypes'
+
+    def __init__(self, id: str, name: str, age: int, overall: float, handedness: int, position: int, pitcher_type: int, pitch_types: list, designated_hitter: bool, season_batting: BattingStats,
                 season_pitching: PitchingStats,  is_hof: bool):
         self.id = id
         self.name = name
@@ -32,9 +34,11 @@ class Player:
         self.season_batting = season_batting
         self.season_pitching = season_pitching
         self.is_hof = is_hof
+        self.overall = overall
+        self.pitch_types = pitch_types
         #Only need this if this is a brand new player
         self.age = age
-        self.overall = overall
+        
 
     def get_id(self) -> str:
         return self.id
@@ -95,7 +99,14 @@ class Player:
     
     def set_is_hof(self, is_hof: bool):
         self.is_hof = is_hof
+
+    def get_pitch_types(self) -> list:
+        return self.pitch_types
+
+    def add_pitch_types(self, pitch_type: str):
+        self.pitch_types.append(pitch_type)
     
+    @DeprecationWarning
     def to_model(self) -> dict[str,]:
         player_id = self.get_id()
         player_name = self.get_name()
@@ -140,6 +151,13 @@ class Player:
             self.age = current_player_age+1
 
         current_player_overalls[League.YEAR] = self.overall
+
+        #save json space and only records pitch types for pitchers
+        #for some reason position players have pitches. But you can't 
+        # convert players positions
+        pitch_types = self.pitch_types
+        if self.position != PlayerType.PITCHER.value:
+            pitch_types = []
         
         
 
@@ -153,6 +171,7 @@ class Player:
             Player.PITCHING_TYPE: self.pitcher_type,
             Player.DESIGNATED_HITTER: self.designated_hitter,
             Player.PITCHING_STATS: current_player_pitching,
+            Player.PITCH_TYPES: pitch_types,
             Player.BATTING_STATS: current_player_batting,
             Player.IS_HOF: self.is_hof
         }
